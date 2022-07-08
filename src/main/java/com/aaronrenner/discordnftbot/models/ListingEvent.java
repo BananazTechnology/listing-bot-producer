@@ -82,7 +82,7 @@ public class ListingEvent implements Comparable<ListingEvent> {
 		
 		// Grab direct variables
 		String listingInWei    = order.getAsString("price"); 
-		String contract 	   = collection.getAsString("address");
+		String collectionAddy  = collection.getAsString("address");
 		this.id 			   = Long.valueOf(looksRareEvent.getAsString("id"));
 		this.collectionName    = collection.getAsString("name");
 		this.slug              = String.valueOf(this.collectionName.toLowerCase().replace(" ", ""));
@@ -90,7 +90,7 @@ public class ListingEvent implements Comparable<ListingEvent> {
 		this.tokenId		   = token.getAsString("tokenId");
 		this.imageUrl      	   = token.getAsString("imageURI");
 		this.displayNameOutput = token.getAsString("name");
-		this.permalink		   = String.format("https://looksrare.org/collections/%s/%s", contract, tokenId);
+		this.permalink		   = String.format("https://looksrare.org/collections/%s/%s", collectionAddy, tokenId);
 		this.sellerWalletAddy  = looksRareEvent.getAsString("from");
 		String ensResolve      = null;
 		try {
@@ -126,7 +126,7 @@ public class ListingEvent implements Comparable<ListingEvent> {
 		// Get price info from body 
 		int decimals = 0;
 		String usdOfPayment = null;
-		String listingInWei = openSeaEvent.getAsString("starting_price"); ;
+		String listingInWei = openSeaEvent.getAsString("starting_price");
 		if(nonNull(paymentToken)) {
 			this.paymentSymbol = paymentToken.getAsString("symbol");
 			usdOfPayment   	   = paymentToken.getAsString("usd_price");
@@ -215,7 +215,7 @@ public class ListingEvent implements Comparable<ListingEvent> {
 			this.engine = RarityEngine.RARITY_TOOLS;
 			String raritySlugOverride = (nonNull(this.contract.getRaritySlug())) ? this.contract.getRaritySlug() : this.slug;
 			this.rarityRedirect = String.format(this.contract.getEngine().getUrl(), raritySlugOverride, this.tokenId);
-		} catch (Exception e) { }
+		} catch (Exception e) {}
 	}
 	
 	private void getGeishaRarity(String tokenId) {
@@ -227,7 +227,7 @@ public class ListingEvent implements Comparable<ListingEvent> {
 			this.engine = RarityEngine.RARITY_TOOLS;
 			String raritySlugOverride = (nonNull(this.contract.getRaritySlug())) ? this.contract.getRaritySlug() : this.slug;
 			this.rarityRedirect = String.format(this.contract.getEngine().getUrl(), raritySlugOverride, this.tokenId);
-		} catch (Exception e) { }
+		} catch (Exception e) {}
 	}
 	
 	private void getAutoRarity() {
@@ -245,7 +245,7 @@ public class ListingEvent implements Comparable<ListingEvent> {
 			// Formats a URL for Discord
 			this.engine = RarityEngine.TRAIT_SNIPER;
 			this.rarityRedirect = String.format(this.contract.getEngine().getUrl(), this.contract.getContractAddress(), this.tokenId);
-		} catch (Exception e) { }
+		} catch (Exception e) {}
 	}
 	
 	public String getRarity() {

@@ -11,32 +11,32 @@ import lombok.Data;
 @Component
 public class ContractCollection {
 
-	private ArrayList<Contract> contractCollection;
+	private ArrayList<Contract> contracts;
 	
 	public ContractCollection() {
-		this.contractCollection = new ArrayList<>();
+		this.contracts = new ArrayList<>();
 	}
 	
 	public void addContract(Contract newContract) {
-		this.contractCollection.add(newContract);
+		this.contracts.add(newContract);
 	}
 	
 	public void removeContract(Contract newContract) {
-		this.contractCollection.remove(newContract);
+		this.contracts.remove(newContract);
 	}
 	
 	public int size() {
-		return contractCollection.size();
+		return contracts.size();
 	}
 	
 	public String toString() {
-		Contract[] contracts = new Contract[contractCollection.size()];
-		return Arrays.deepToString(contracts);
+		Contract[] simpArrContracts = new Contract[contracts.size()];
+		return Arrays.deepToString(simpArrContracts);
 	}
 	
 	public boolean isWatchingAddress(String otherAddress) {
 		boolean response = false;
-		for (Contract contract : contractCollection) {
+		for (Contract contract : contracts) {
 			if(contract.getContractAddress().equalsIgnoreCase(otherAddress)) response = true;
 		}
 		return response;
@@ -44,7 +44,7 @@ public class ContractCollection {
 
 	public Contract getContractById(Long id) {
 		Contract response = null;
-		for (Contract contract : contractCollection) {
+		for (Contract contract : contracts) {
 			if(contract.getId() == id) response = contract;
 		}
 		return response;

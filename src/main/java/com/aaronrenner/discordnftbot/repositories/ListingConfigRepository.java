@@ -5,4 +5,4 @@ import org.springframework.stereotype.Repository;
 import com.aaronrenner.discordnftbot.models.ListingConfig;
 
 @Repository
-public interface ListingConfigRepository extends JpaRepository<ListingConfig, Long> { }
+public interface ListingConfigRepository extends JpaRepository<ListingConfig, Long> {}
