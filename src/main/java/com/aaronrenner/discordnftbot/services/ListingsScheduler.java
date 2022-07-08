@@ -119,9 +119,10 @@ public class ListingsScheduler extends TimerTask {
 							if(event.getId() > this.openSeaIdBuffer && !event.getHash().equalsIgnoreCase(this.openSeaLastHash)) {
 								// Log in terminal
 								logInfoNewListing(event);
-						
-								// Write
-								this.contract.getEvents().save(event);
+
+								// Write, ensure not exists to not overwrite existing data
+								if(!this.contract.getEvents().existsById(event.getId()))
+									this.contract.getEvents().save(event);
 							} else break;
 						}
 					}
@@ -153,8 +154,9 @@ public class ListingsScheduler extends TimerTask {
 						/** Log in terminal */
 						logInfoNewListing(event);
 
-						// Write
-						this.contract.getEvents().save(event);
+						// Write, ensure not exists to not overwrite existing data
+						if(!this.contract.getEvents().existsById(event.getId()))
+							this.contract.getEvents().save(event);
 					} else break;
 				}
 			}

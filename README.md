@@ -1,4 +1,4 @@
-[![SOFT](https://github.com/Aman7123/listing-bot-producer/actions/workflows/SOFT.yml/badge.svg?branch=main)](https://github.com/Aman7123/listing-bot-producer/actions/workflows/SOFT.yml) [![RELEASE](https://github.com/Aman7123/listing-bot-producer/actions/workflows/RELEASE.yml/badge.svg?branch=main)](https://github.com/Aman7123/listing-bot-producer/actions/workflows/RELEASE.yml)
+[![SOFT](https://github.com/BananazTechnology/listing-bot-producer/actions/workflows/SOFT.yml/badge.svg?branch=develop)](https://github.com/BananazTechnology/listing-bot-producer/actions/workflows/SOFT.yml) [![RELEASE](https://github.com/BananazTechnology/listing-bot-producer/actions/workflows/RELEASE.yml/badge.svg)](https://github.com/BananazTechnology/listing-bot-producer/actions/workflows/RELEASE.yml)
 
 # Listing Bot Producer
 * Description: A @spring-projects framework project which loads items into @mysql
@@ -15,14 +15,14 @@
   
 ## Introduction
 
-This Java application is built on the Spring-Boot framework! This producer bot utilizes external APIs like those from @ProjectOpenSea and @LooksRare to obtain market event information and creates generic event objects in a MySQL database. Unlike our original listing bot [discord-nft-listing-bot](https://github.com/Aman7123/discord-nft-listing-bot) which was configured on a per-instance basis with individual tokens, this revised setup requires only configuration to the organizations DB which contains all configurations and are load balanced to these producer bots. This bot includes a small internal API for obtaining the state configuration of each contract.
+This Java application is built on the Spring-Boot framework! This producer bot utilizes external APIs like those from @ProjectOpenSea and @LooksRare to obtain market event information and creates generic event objects in a MySQL database. Unlike our original listing bot [discord-nft-listing-bot](https://github.com/Aman7123/discord-nft-listing-bot) which was configured on a per-instance basis with individual tokens, this revised setup requires only configuration to the organization DB which contains all configurations and are load balanced to these producer bots. This bot includes a small internal API for obtaining the state configuration of each contract.
 
 THIS REPO IS A LISTING EVENT PRODUCER
 
 ## Setup
 ### Properties
 
-Through environment variables or by modifying the application.properties these following values need to be set:
+Through environment variables or by modifying the application.properties the following values need to be set:
 
 ``` yaml
 # API Config
@@ -45,15 +45,15 @@ spring:
 
 ### Running the Project
 
-Executing the project can be done in two ways, the first is by initializing using Maven which the second produces a traditional Jar file. Before attempting to run the program some setup must be done inside of the [src/main/resources/application.properties](src/main/resources/application.yml), you can follow the guides above for setting up the properties.
+Executing the project can be done in two ways, the first is by initializing using Maven and the second produces a traditional Jar file. Before attempting to run the program some setup must be done inside of the [src/main/resources/application.properties](src/main/resources/application.yml), you can follow the guides above for setting up the properties.
 
 ### Accessing internal debug API
 Assuming the `server` properties are configured as shown above.
 
-* `https://localhost:8080/api/contracts` - Shows the current internal configuration of all contracts.
-* `https://localhost:8080/api/actuator` - Different endpoints to view status of Spring.
+* `https://localhost:8080/api/contracts` - This shows the current internal configuration of all contracts.
+* `https://localhost:8080/api/actuator` - Different endpoints to view the status of Spring.
 
-In a production environment these debug ports and routes should be hardened, this [Production Monitoring](https://docs.spring.io/spring-boot/docs/1.5.4.RELEASE/reference/html/production-ready-monitoring.html) guide describes the settings for changing the actuator port. The `/contracts` endpoint is read only and contains no sensitive data.
+In a production environment, these debug ports and routes should be hardened, this [Production Monitoring](https://docs.spring.io/spring-boot/docs/1.5.4.RELEASE/reference/html/production-ready-monitoring.html) guide describes the settings for changing the actuator port. The `/contracts` endpoint is read-only and contains no sensitive data.
 
 ### Build with Maven
 
@@ -61,14 +61,14 @@ If you have Maven installed on your machine you can navigate to the root project
 ```sh
 mvn -B -DskipTests clean package
 ```
-You can also use the built in Maven wrapper and execute the project by following this command.
+You can also use the built-in Maven wrapper and execute the project by following this command.
 ```sh
 ./mvnw -B -DskipTests clean package
 ```
 ### Setting up in IDE
 
 Download Lombok to your IDE or VS Code Extension!
-Use the IDE "Run Configuration" to setup the `-Dspring.datasource.username` (eclipse example) in the Environment Properties.
+Use the IDE "Run Configuration" to set up the `-Dspring.datasource.username` (eclipse example) in the Environment Properties.
 
 ### Creating a Docker Image
 
