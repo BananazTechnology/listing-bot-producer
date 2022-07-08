@@ -1,0 +1,36 @@
+app:
+  version: @project.version@
+---
+server:
+  port: 8080
+  address: 0.0.0.0
+  servlet:
+    context-path: /api
+---
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      use_sql_comments: true
+      format_sql: true
+      ddl-auto: update
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connectionTimeout: 60000
+      idleTimeout: 300000
+      maxLifetime: 16000
+      maximumPoolSize: 8
+  banner:
+    # Custom Banner
+    location: classpath:banner.txt
+---
+# Health check acuator
+management:
+  endpoints:
+    jmx:
+      exposure:
+        include: "*"
+    web:
+      exposure:
+        include: "*"

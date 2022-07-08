@@ -1,0 +1,41 @@
+# debug: true
+---
+app:
+  version: @project.version@
+---
+server:
+  port: 8080
+  address: 0.0.0.0
+  servlet:
+    context-path: /api
+---
+spring:
+  jpa:
+#    show-sql: true
+    hibernate:
+      use_sql_comments: true
+      format_sql: true
+      ddl-auto: update
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://aar.dev:3306/MarketBotConfigs?createDatabaseIfNotExist=true
+    username: USERNAME
+    password: PASSWORD
+    hikari:
+      connectionTimeout: 120000
+      idleTimeout: 600000
+      maxLifetime: 31000
+      maximumPoolSize: 4
+  banner:
+    # Custom Banner
+    location: classpath:banner.txt
+---
+# Health check actuator
+management:
+  endpoints:
+    jmx:
+      exposure:
+        include: "*"
+    web:
+      exposure:
+        include: "*"

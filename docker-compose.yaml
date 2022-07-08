@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  listingBotProducer:
+    image: bananaztech/listing-bot-producer:latest
+    container_name: listing-bot-producer-prod
+    restart: always
+    stdin_open: true
+    tty: true
+    mem_limit: 200m
+
+networks:
+  default:
+    external:
+      name: bots
