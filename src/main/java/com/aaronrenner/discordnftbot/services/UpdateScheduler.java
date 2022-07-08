@@ -132,7 +132,7 @@ public class UpdateScheduler extends TimerTask {
 			}
 		}
 		// Cleanup
-		for(Contract c : this.contracts.getContractCollection()) {
+		for(Contract c : this.contracts.getContracts()) {
 			if(!c.isActive()) {
 				LOGGER.debug("Object was found to not be active, removing: {}", c.toString());
 				c.stopListingsScheduler();

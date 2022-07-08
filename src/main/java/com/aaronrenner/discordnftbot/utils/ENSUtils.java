@@ -47,7 +47,7 @@ public class ENSUtils {
 				JSONObject domainObj          = (JSONObject) selectRegistration.get("domain");
 				ensResponse = domainObj.getAsString("name");
 			}
-		} catch (Exception e) { }
+		} catch (Exception e) {}
 		return ensResponse;
 	}
 	

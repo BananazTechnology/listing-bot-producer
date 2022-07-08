@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.aaronrenner</groupId>
 	<artifactId>listing-bot-producer</artifactId>
-	<version>0.1.0</version>
+	<version>1.0.1</version>
 	<name>listing-bot-producer</name>
 	<description>A @spring-projects framework project which loads items into @mysql</description>
 	<properties>
