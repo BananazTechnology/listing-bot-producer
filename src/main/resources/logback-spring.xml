@@ -8,7 +8,7 @@
       <File>/tmp/nftBotRuntime.log</File>
    </appender>
    
-   <logger name="com.aaronrenner" level="DEBUG" />
+   <logger name="tech.bananaz" level="DEBUG" />
    <root level="INFO">
    	  <appender-ref ref="FILE" />
    </root>

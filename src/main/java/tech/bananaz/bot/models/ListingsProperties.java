@@ -1,12 +1,13 @@
-package com.aaronrenner.discordnftbot.models;
+package tech.bananaz.bot.models;
 
 import static java.util.Objects.nonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import com.aaronrenner.discordnftbot.repositories.ListingConfigRepository;
-import com.aaronrenner.discordnftbot.repositories.ListingEventRepository;
-import com.aaronrenner.discordnftbot.utils.RarityEngine;
+
+import tech.bananaz.bot.repositories.ListingConfigRepository;
+import tech.bananaz.bot.repositories.ListingEventRepository;
+import tech.bananaz.bot.utils.RarityEngine;
 
 @Component
 public class ListingsProperties {

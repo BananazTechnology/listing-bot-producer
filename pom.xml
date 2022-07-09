@@ -8,14 +8,14 @@
 		<version>2.5.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.aaronrenner</groupId>
+	<groupId>tech.bananaz</groupId>
 	<artifactId>listing-bot-producer</artifactId>
-	<version>1.1.0</version>
+	<version>1.1.1</version>
 	<name>listing-bot-producer</name>
 	<description>A @spring-projects framework project which loads items into @mysql</description>
 	<properties>
 		<java.version>11</java.version>
-		<sonar.projectKey>producer-bot</sonar.projectKey>
+		<sonar.projectKey>listings-producer-bot</sonar.projectKey>
 	</properties>
 	<dependencies>
 		<dependency>

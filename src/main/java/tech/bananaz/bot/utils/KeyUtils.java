@@ -1,4 +1,4 @@
-package com.aaronrenner.discordnftbot.utils;
+package tech.bananaz.bot.utils;
 
 import net.minidev.json.JSONObject;
 

@@ -1,4 +1,4 @@
-package com.aaronrenner.discordnftbot;
+package tech.bananaz.bot;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,16 +6,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import com.aaronrenner.discordnftbot.DiscordNftBotApplication;
-import com.aaronrenner.discordnftbot.services.RunetimeScheduler;
+
+import tech.bananaz.bot.BotApplication;
+import tech.bananaz.bot.services.RunetimeScheduler;
 
 @SpringBootApplication
-public class DiscordNftBotApplication {
+public class BotApplication {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DiscordNftBotApplication.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BotApplication.class);
 	
 	public static void main(String[] args) {
-		SpringApplication.run(DiscordNftBotApplication.class, args);
+		SpringApplication.run(BotApplication.class, args);
 		new RunetimeScheduler();
 	}
 	

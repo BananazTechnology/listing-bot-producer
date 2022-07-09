@@ -1,20 +1,21 @@
-package com.aaronrenner.discordnftbot.services;
+package tech.bananaz.bot.services;
 
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.aaronrenner.discordnftbot.models.Contract;
-import com.aaronrenner.discordnftbot.models.ContractCollection;
-import com.aaronrenner.discordnftbot.models.ListingConfig;
-import com.aaronrenner.discordnftbot.models.ListingsProperties;
-import com.aaronrenner.discordnftbot.repositories.ListingConfigRepository;
-import com.aaronrenner.discordnftbot.repositories.ListingEventRepository;
-import com.aaronrenner.discordnftbot.utils.RarityEngine;
+
+import tech.bananaz.bot.models.Contract;
+import tech.bananaz.bot.models.ContractCollection;
+import tech.bananaz.bot.models.ListingConfig;
+import tech.bananaz.bot.models.ListingsProperties;
+import tech.bananaz.bot.repositories.ListingConfigRepository;
+import tech.bananaz.bot.repositories.ListingEventRepository;
+import tech.bananaz.bot.utils.RarityEngine;
 
 import static java.util.Objects.nonNull;
-import static com.aaronrenner.discordnftbot.utils.StringUtils.nonEquals;
+import static tech.bananaz.bot.utils.StringUtils.nonEquals;
 
 @Component
 public class UpdateScheduler extends TimerTask {

@@ -1,18 +1,19 @@
-package com.aaronrenner.discordnftbot.services;
+package tech.bananaz.bot.services;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.aaronrenner.discordnftbot.models.Contract;
-import com.aaronrenner.discordnftbot.models.ListingEvent;
-import com.aaronrenner.discordnftbot.utils.KeyUtils;
-import com.aaronrenner.discordnftbot.utils.LooksRareUtils;
-import com.aaronrenner.discordnftbot.utils.OpenseaUtils;
 
 import lombok.Getter;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import tech.bananaz.bot.models.Contract;
+import tech.bananaz.bot.models.ListingEvent;
+import tech.bananaz.bot.utils.KeyUtils;
+import tech.bananaz.bot.utils.LooksRareUtils;
+import tech.bananaz.bot.utils.OpenseaUtils;
+
 import static java.util.Objects.nonNull;
 
 public class ListingsScheduler extends TimerTask {
@@ -34,7 +35,6 @@ public class ListingsScheduler extends TimerTask {
     private TimerTask task; // creating timer task
 	private static final Logger LOGGER = LoggerFactory.getLogger(ListingsScheduler.class);
 
-
 	public ListingsScheduler(Contract contract) {
 		this.contract = contract;
 		try {
@@ -44,6 +44,7 @@ public class ListingsScheduler extends TimerTask {
 			e.printStackTrace();
 		}
 	}
+	
 	@Override
 	public void run() {
 		if(nonNull(this.contract) && this.active && this.contract.isActive()) {
@@ -86,7 +87,7 @@ public class ListingsScheduler extends TimerTask {
 		return this.active;
 	}
 	
-	private void watchListings() throws NullPointerException, Exception {
+	private void watchListings() throws Exception {
 		// Refresh OpenSea key before every use
 		this.api = new OpenseaUtils(this.kUtils.getKey());
 		JSONObject marketListings = 

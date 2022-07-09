@@ -62,4 +62,5 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.artifact.outputs.artifactId }}:latest, ${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.artifact.outputs.artifactId }}:${{ steps.project.outputs.version }}
           labels: |
-            com.aaronrenner.bot.version=${{ steps.project.outputs.version }}
+            tech.bananaz.bot.version=${{ steps.project.outputs.version }}
+            maintainer=docker-maintainer@bananaz.tech

@@ -1,4 +1,4 @@
-package com.aaronrenner.discordnftbot.models;
+package tech.bananaz.bot.models;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -11,17 +11,19 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import com.aaronrenner.discordnftbot.utils.CryptoConvertUtils;
-import com.aaronrenner.discordnftbot.utils.ENSUtils;
-import com.aaronrenner.discordnftbot.utils.MarketPlace;
-import com.aaronrenner.discordnftbot.utils.RarityEngine;
-import com.aaronrenner.discordnftbot.utils.Ticker;
-import com.aaronrenner.discordnftbot.utils.UrlUtils;
-import com.aaronrenner.discordnftbot.utils.CryptoConvertUtils.Unit;
+
 import lombok.Data;
 import lombok.ToString;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import tech.bananaz.bot.utils.CryptoConvertUtils;
+import tech.bananaz.bot.utils.ENSUtils;
+import tech.bananaz.bot.utils.MarketPlace;
+import tech.bananaz.bot.utils.RarityEngine;
+import tech.bananaz.bot.utils.Ticker;
+import tech.bananaz.bot.utils.UrlUtils;
+import tech.bananaz.bot.utils.CryptoConvertUtils.Unit;
+
 import static java.util.Objects.nonNull;
 import static java.util.Objects.isNull;
 
