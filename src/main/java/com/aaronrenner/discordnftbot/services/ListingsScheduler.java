@@ -53,12 +53,14 @@ public class ListingsScheduler extends TimerTask {
 					watchListings();
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				LOGGER.error(String.format("Failed during get OpenSea listing: %s, stack: %s", this.contract.getContractAddress(), Arrays.toString(e.getStackTrace()))); 
 			}
 			// LooksRare
 			try {
 				if(!contract.isExcludeLooks() && !contract.isSlug()) watchLooksRare();
 			} catch (Exception e) {
+				e.printStackTrace();
 				LOGGER.error(String.format("Failed during get LooksRare listing: %s, stack: %s", this.contract.getContractAddress(), Arrays.toString(e.getStackTrace()))); 
 			}
 		}
@@ -128,12 +130,12 @@ public class ListingsScheduler extends TimerTask {
 					}
 				}
 				ListingEvent f0 = events.get(0);
-				if(this.openSeaIdBuffer == f0.getId()) LOGGER.info(String.format("No listings found this loop on: %s", this.contract.toString()));
 				if(f0.getId() > this.openSeaIdBuffer) {
 					this.openSeaLastHash = f0.getHash();
 					this.openSeaIdBuffer = f0.getId();
 				}
 			}
+			if(events.size() == 0) LOGGER.info(String.format("No listings found this OpenSea loop: %s", this.contract.toString()));
 		}
 	}
 	
@@ -162,7 +164,7 @@ public class ListingsScheduler extends TimerTask {
 			}
 			JSONObject listing = (JSONObject) events.get(0);
 			int id = Integer.valueOf(listing.getAsString("id"));
-			if(this.previousLooksId == id) LOGGER.info(String.format("No listings found this LooksRare loop on: %s", this.contract.toString()));
+			if(this.previousLooksId == id) LOGGER.info(String.format("No listings found this LooksRare loop: %s", this.contract.toString()));
 			previousLooksId = id;
 		}
 	}
