@@ -3,12 +3,10 @@ package com.aaronrenner.discordnftbot.models;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.Instant;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import com.aaronrenner.discordnftbot.utils.CryptoConvertUtils;
@@ -69,6 +67,8 @@ public class ListingEvent implements Comparable<ListingEvent> {
 	private long contractId;
 	private String consumedBy;
 	private boolean consumed;
+	
+	public ListingEvent() {}
 	
 	public ListingEvent(Contract contract) {
 		this.contract = contract;

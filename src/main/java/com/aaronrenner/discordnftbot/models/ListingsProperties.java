@@ -18,7 +18,7 @@ public class ListingsProperties {
 		try {
 			// Grab rarityEngine
 			RarityEngine rarityEngine = (nonNull(config.getRarityEngine())) ? RarityEngine.fromString(config.getRarityEngine()): RarityEngine.RARITY_TOOLS;
-			
+
 			// If no server or outputChannel then throw exception
 			output = new Contract();
 			output.setEvents(events);
