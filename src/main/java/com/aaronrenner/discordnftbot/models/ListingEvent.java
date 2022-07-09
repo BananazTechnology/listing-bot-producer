@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.Instant;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -45,6 +47,8 @@ public class ListingEvent implements Comparable<ListingEvent> {
 	private long   id;
 	private String name;
 	private Instant createdDate;
+	private Instant startTime;
+	private Instant endTime;
 	private String tokenId;
 	private String collectionName;
 	private String collectionImageUrl;
@@ -52,7 +56,6 @@ public class ListingEvent implements Comparable<ListingEvent> {
 	private String imageUrl;
 	private String permalink;
 	private int	   quantity;
-	private String paymentSymbol;
 	private String sellerWalletAddy;
 	private String sellerName;
 	private String displayNameOutput;
@@ -61,7 +64,11 @@ public class ListingEvent implements Comparable<ListingEvent> {
 	private BigDecimal listingPriceInCrypto;
 	private BigDecimal listingPriceInUsd;
 	private String listingAmoutOutput;
+	@Enumerated( EnumType.STRING )
+	private Ticker cryptoPaymentType;
+	@Enumerated( EnumType.STRING )
 	private RarityEngine engine;
+	@Enumerated( EnumType.STRING )
 	private MarketPlace market;
 	// These last few items are for the consumer
 	private long contractId;
@@ -87,6 +94,8 @@ public class ListingEvent implements Comparable<ListingEvent> {
 		this.collectionName    = collection.getAsString("name");
 		this.slug              = String.valueOf(this.collectionName.toLowerCase().replace(" ", ""));
 		this.createdDate	   = Instant.parse(looksRareEvent.getAsString("createdAt"));
+		this.startTime	       = Instant.ofEpochSecond(order.getAsNumber("startTime").longValue());
+		this.endTime	       = Instant.ofEpochSecond(order.getAsNumber("endTime").longValue());
 		this.tokenId		   = token.getAsString("tokenId");
 		this.imageUrl      	   = token.getAsString("imageURI");
 		this.displayNameOutput = token.getAsString("name");
@@ -103,8 +112,9 @@ public class ListingEvent implements Comparable<ListingEvent> {
 		// Make calculations about price
 		this.listingPriceInCrypto  = convert.convertToCrypto(listingInWei, Unit.ETH);
 		this.listingAmoutOutput    = String.format("%s%s", this.listingPriceInCrypto, Ticker.ETH.getSymbol());
-		this.quantity 	 	   	   = 1;
+		this.quantity 	 	   	   = Integer.valueOf(order.getAsString("amount"));
 		this.market 			   = MarketPlace.LOOKSRARE;
+		this.cryptoPaymentType     = Ticker.ETH;
 		
 		// Process final things to complete the object
 		getRarity();
@@ -118,29 +128,34 @@ public class ListingEvent implements Comparable<ListingEvent> {
 		JSONObject paymentToken = (JSONObject) openSeaEvent.get("payment_token");
 		JSONObject sellerObj    = (JSONObject) openSeaEvent.get("seller");
 		JSONObject sellerUser   = (JSONObject) sellerObj.get("user");
+		String paymentSymbol    = null; 
 		
 		// Grab direct variables
-		this.id 				= Long.parseLong(openSeaEvent.getAsString("id"));
+		this.id 				= openSeaEvent.getAsNumber("id").longValue();
 		this.createdDate		= Instant.parse(openSeaEvent.getAsString("created_date") + "Z");
+		this.startTime		    = Instant.parse(openSeaEvent.getAsString("listing_time") + "Z");
+		/// Try to get duration or assume OpenSea default 1 month
+		long duration           = (nonNull(openSeaEvent.getAsNumber("duration"))) ? openSeaEvent.getAsNumber("duration").longValue() : 2630000;
+		this.endTime		    = Instant.ofEpochSecond((this.startTime.getEpochSecond() + duration));
 		
 		// Get price info from body 
 		int decimals = 0;
 		String usdOfPayment = null;
 		String listingInWei = openSeaEvent.getAsString("starting_price");
 		if(nonNull(paymentToken)) {
-			this.paymentSymbol = paymentToken.getAsString("symbol");
+			paymentSymbol = paymentToken.getAsString("symbol");
 			usdOfPayment   	   = paymentToken.getAsString("usd_price");
 			decimals           = Integer.valueOf(paymentToken.getAsString("decimals"));
 		} else {
 			if(this.contract.isSolana()) {
 				// For the purpose of rolling out SOL quickly we need a quick fix for missing currency formatting
 				usdOfPayment = "0";
-				this.paymentSymbol = Ticker.SOL.toString();
+				paymentSymbol = Ticker.SOL.toString();
 				decimals = CryptoConvertUtils.Unit.SOL.getDecimal();
 			}
 		}
 		
-		this.quantity 	  		= Integer.valueOf(openSeaEvent.getAsString("quantity"));
+		this.quantity 	  		= openSeaEvent.getAsNumber("quantity").intValue();
 		this.sellerWalletAddy 	= sellerObj.getAsString("address");
 		this.sellerName	  		= sellerOrWinnerOrAddress(sellerUser, sellerWalletAddy);
 
@@ -169,7 +184,8 @@ public class ListingEvent implements Comparable<ListingEvent> {
 		this.listingAmoutOutput    = null;
 		// This is wrapped in try/catch for if the searched paymentSymbol has no Ticker symbol available
 		try {
-			Ticker symbol = Ticker.fromString(this.paymentSymbol);
+			Ticker symbol = Ticker.fromString(paymentSymbol);
+			this.cryptoPaymentType = symbol;
 			String newSymbol = symbol.getSymbol();
 			this.listingAmoutOutput = String.format("%s%s %s", 
 														this.listingPriceInCrypto, 
