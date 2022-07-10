@@ -26,6 +26,7 @@ public class ListingsScheduler extends TimerTask {
 	private boolean active			= false;
 	private LooksRareUtils looksApi = new LooksRareUtils();
 	private KeyUtils kUtils         = new KeyUtils();
+	@Getter
 	private String openSeaLastHash  = "";
 	@Getter
 	private int  previousLooksId 	= 0;

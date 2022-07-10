@@ -38,9 +38,11 @@ public class Contract {
 	// Is Solana on OpenSea
 	private boolean isSolana 		  = false;
 	// For bundles support
-	private boolean showBundles 			  = true;
+	private boolean showBundles 	  = true;
 	@SuppressWarnings("unused")
 	private long lastOpenseaId;
+	@SuppressWarnings("unused")
+	private String lastOpenseaHash;
 
 	// Discord Settings
 	// If enabled, will auto pull from LooksRare for all
@@ -70,5 +72,9 @@ public class Contract {
 	
 	public long getLastLooksrareId() {
 		return this.newRequest.getPreviousLooksId();
+	}
+	
+	public String getLastOpenseaHash() {
+		return this.newRequest.getOpenSeaLastHash();
 	}
 }

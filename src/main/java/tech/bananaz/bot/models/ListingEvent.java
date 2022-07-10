@@ -38,6 +38,8 @@ public class ListingEvent implements Comparable<ListingEvent> {
 	private static final String DF_API_URL = "http://proxy.kong.aaronrenner.com/api/rarity/deadfellaz/";
 	private static final String GEISHA_API_URL = "http://proxy.kong.aaronrenner.com/api/rarity/geisha/";
 	private static final String AUTO_RARITY_URL = "https://api.traitsniper.com/api/projects/%s/nfts?token_id=%s&trait_count=true&trait_norm=true";
+	private static final String ETHERSCAN_URL   = "https://etherscan.io/address/";
+	private static final String SOLSCAN_URL     = "https://solscan.io/address/";
 	private static UrlUtils urlUtils   = new UrlUtils();
 	private static ENSUtils ensUtils   = new ENSUtils();
 	private static CryptoConvertUtils convert = new CryptoConvertUtils();
@@ -60,6 +62,7 @@ public class ListingEvent implements Comparable<ListingEvent> {
 	private int	   quantity;
 	private String sellerWalletAddy;
 	private String sellerName;
+	private String sellerUrl;
 	private String displayNameOutput;
 	private String rarity;
 	private String rarityRedirect;
@@ -110,6 +113,7 @@ public class ListingEvent implements Comparable<ListingEvent> {
 			ensResolve 		   = sellerWalletAddy;
 		}
 		this.sellerName	  	   = (!ensResolve.equals(sellerWalletAddy)) ? ensResolve : sellerOrWinnerOrAddress(looksRareEvent, sellerWalletAddy);
+		this.sellerUrl		   = String.format("%s%s", ETHERSCAN_URL, this.sellerWalletAddy);
 		
 		// Make calculations about price
 		this.listingPriceInCrypto  = convert.convertToCrypto(listingInWei, Unit.ETH);
@@ -139,27 +143,31 @@ public class ListingEvent implements Comparable<ListingEvent> {
 		/// Try to get duration or assume OpenSea default 1 month
 		long duration           = (nonNull(openSeaEvent.getAsNumber("duration"))) ? openSeaEvent.getAsNumber("duration").longValue() : 2630000;
 		this.endTime		    = Instant.ofEpochSecond((this.startTime.getEpochSecond() + duration));
+		this.quantity 	  		= openSeaEvent.getAsNumber("quantity").intValue();
+		this.sellerWalletAddy 	= sellerObj.getAsString("address");
+		this.sellerName	  		= sellerOrWinnerOrAddress(sellerUser, sellerWalletAddy);
 		
 		// Get price info from body 
 		int decimals = 0;
 		String usdOfPayment = null;
 		String listingInWei = openSeaEvent.getAsString("starting_price");
+		
+		// Process ETH on OpenSea
 		if(nonNull(paymentToken)) {
-			paymentSymbol = paymentToken.getAsString("symbol");
+			paymentSymbol      = paymentToken.getAsString("symbol");
 			usdOfPayment   	   = paymentToken.getAsString("usd_price");
 			decimals           = Integer.valueOf(paymentToken.getAsString("decimals"));
+			this.sellerUrl	   = String.format("%s%s", ETHERSCAN_URL, this.sellerWalletAddy);
 		} else {
+			// Process SOL on OpenSea
 			if(this.contract.isSolana()) {
 				// For the purpose of rolling out SOL quickly we need a quick fix for missing currency formatting
-				usdOfPayment = "0";
-				paymentSymbol = Ticker.SOL.toString();
-				decimals = CryptoConvertUtils.Unit.SOL.getDecimal();
+				usdOfPayment   = "0";
+				paymentSymbol  = Ticker.SOL.toString();
+				decimals 	   = CryptoConvertUtils.Unit.SOL.getDecimal();
+				this.sellerUrl = String.format("%s%s", SOLSCAN_URL, this.sellerWalletAddy);
 			}
 		}
-		
-		this.quantity 	  		= openSeaEvent.getAsNumber("quantity").intValue();
-		this.sellerWalletAddy 	= sellerObj.getAsString("address");
-		this.sellerName	  		= sellerOrWinnerOrAddress(sellerUser, sellerWalletAddy);
 
 		// null for single item, else for bundle
 		if(nonNull(asset)) {
