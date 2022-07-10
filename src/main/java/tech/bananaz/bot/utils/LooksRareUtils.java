@@ -1,31 +1,42 @@
-package com.aaronrenner.discordnftbot.utils;
+package tech.bananaz.bot.utils;
 
 import java.net.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import net.minidev.json.JSONObject;
 
-public class UrlUtils {
+public class LooksRareUtils {
 
-	private RestTemplate restTemplate	= new RestTemplate();
-	private StringUtils sUtils			= new StringUtils();
-	private JsonUtils jsonUtils			= new JsonUtils();
-	private static final Logger LOGGER  = LoggerFactory.getLogger(UrlUtils.class);
+	// Base URL is the query endpoint for the subgraph we need to query
+	private static String BASEURL      	 = "https://api.looksrare.org/api/v1/events?collection=%s&type=LIST";
+	private RestTemplate restTemplate    = new RestTemplate();
+	private StringUtils sUtils         	 = new StringUtils();
+	private JsonUtils jUtils 	   	   	 = new JsonUtils();
+	private static final Logger LOGGER 	 = LoggerFactory.getLogger(LooksRareUtils.class);
+	
+	/**
+	 * Gets the events for a specific contract
+	 * @param contract
+	 * @return
+	 */
+	public JSONObject getEvents(String contract) throws Exception {
+		String buildUrl = String.format(BASEURL, contract);
+		return getAllRequest(buildUrl);
+	}
+	
 	/**
 	 * This is a helper method, in this method you can provide a String of the URL for 
-	 * requesting and it will return a JSONObject of the response from Steam.
+	 * requesting and it will return a JSONObject of the response from LooksRare
 	 * 
 	 * @param getURL Pass in a String of the API request URL.
 	 * @return A json-smart object of the
 	 * @throws HttpException 
 	 * @throws InterruptedException
 	 */
-	public JSONObject getObjectRequest(String getURL, HttpEntity<String> requestMetadata) throws Exception {
+	private JSONObject getAllRequest(String getURL) throws Exception {
 		// Variables for runtime
 		URI createURI = sUtils.getURIFromString(getURL);
 		ResponseEntity<String> result = null;
@@ -34,17 +45,8 @@ public class UrlUtils {
 		long startTime = System.currentTimeMillis();
 		long endTime = System.currentTimeMillis();
 		try {
-			// Runs for events endpoint, this to to append api key
-			if(requestMetadata != null) {
-				// Create HTTP Call
-				result = restTemplate.exchange(createURI, HttpMethod.GET, requestMetadata, String.class);
-				// Parse String response for JSONObject
-				newResponse = jsonUtils.stringToJsonObject(result.getBody());
-				endTime = System.currentTimeMillis();
-			} else {
-				result = restTemplate.getForEntity(createURI, String.class);
-				newResponse = jsonUtils.stringToJsonObject(result.getBody());
-			}
+			result = restTemplate.getForEntity(createURI, String.class);
+			newResponse = jUtils.stringToJsonObject(result.getBody());
 		} catch (HttpClientErrorException e) {
 			LOGGER.error(String.format("Failed HTTP GET: [%s] %s - %s", e.getRawStatusCode(), e.getStatusText(), e.getResponseHeaders().toSingleValueMap()));
 			throw new Exception(String.format("Failed HTTP GET: [%s] %s - %s", e.getRawStatusCode(), e.getStatusText(), e.getResponseHeaders().toSingleValueMap()));

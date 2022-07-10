@@ -1,4 +1,4 @@
-package com.aaronrenner.discordnftbot.utils;
+package tech.bananaz.bot.utils;
 
 import java.net.*;
 import java.util.*;
@@ -6,8 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.web.client.*;
-import com.aaronrenner.discordnftbot.models.Contract;
+
 import net.minidev.json.*;
+import tech.bananaz.bot.models.Contract;
 
 public class OpenseaUtils {
 	

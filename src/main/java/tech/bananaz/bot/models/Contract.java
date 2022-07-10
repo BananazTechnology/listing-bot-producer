@@ -1,13 +1,13 @@
-package com.aaronrenner.discordnftbot.models;
+package tech.bananaz.bot.models;
 
-import com.aaronrenner.discordnftbot.repositories.ListingConfigRepository;
-import com.aaronrenner.discordnftbot.repositories.ListingEventRepository;
-import com.aaronrenner.discordnftbot.services.ListingsScheduler;
-import com.aaronrenner.discordnftbot.utils.RarityEngine;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.ToString;
 import lombok.ToString.Exclude;
+import tech.bananaz.bot.repositories.ListingConfigRepository;
+import tech.bananaz.bot.repositories.ListingEventRepository;
+import tech.bananaz.bot.services.ListingsScheduler;
+import tech.bananaz.bot.utils.RarityEngine;
 
 @ToString(includeFieldNames=true)
 @Data
@@ -32,13 +32,17 @@ public class Contract {
 	private boolean active 			  = true;
 
 	// OpenSea settings
-	boolean excludeOpensea 			  = false;
+	private boolean excludeOpensea 	  = false;
 	// Support for slug based API requests in OpenSea
 	private boolean isSlug 			  = false;
 	// Is Solana on OpenSea
 	private boolean isSolana 		  = false;
 	// For bundles support
-	boolean showBundles 			  = true;
+	private boolean showBundles 	  = true;
+	@SuppressWarnings("unused")
+	private long lastOpenseaId;
+	@SuppressWarnings("unused")
+	private String lastOpenseaHash;
 
 	// Discord Settings
 	// If enabled, will auto pull from LooksRare for all
@@ -49,11 +53,7 @@ public class Contract {
 	private String raritySlug;
 	
 	// LooksRare settings
-	boolean excludeLooks 			  = false;
-	
-	// For API Manager
-	@SuppressWarnings("unused")
-	private long lastOpenseaId;
+	private boolean excludeLooks 	  = false;
 	@SuppressWarnings("unused")
 	private long lastLooksrareId;
 
@@ -72,5 +72,9 @@ public class Contract {
 	
 	public long getLastLooksrareId() {
 		return this.newRequest.getPreviousLooksId();
+	}
+	
+	public String getLastOpenseaHash() {
+		return this.newRequest.getOpenSeaLastHash();
 	}
 }

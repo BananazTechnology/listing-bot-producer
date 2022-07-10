@@ -1,4 +1,4 @@
-package com.aaronrenner.discordnftbot.models;
+package tech.bananaz.bot.models;
 
 import javax.persistence.*;
 import lombok.Data;

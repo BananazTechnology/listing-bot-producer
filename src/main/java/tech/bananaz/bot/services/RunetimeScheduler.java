@@ -1,4 +1,4 @@
-package com.aaronrenner.discordnftbot.services;
+package tech.bananaz.bot.services;
 
 import java.util.*;
 import javax.annotation.PostConstruct;
@@ -6,12 +6,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.aaronrenner.discordnftbot.models.Contract;
-import com.aaronrenner.discordnftbot.models.ContractCollection;
-import com.aaronrenner.discordnftbot.models.ListingConfig;
-import com.aaronrenner.discordnftbot.models.ListingsProperties;
-import com.aaronrenner.discordnftbot.repositories.ListingConfigRepository;
-import com.aaronrenner.discordnftbot.repositories.ListingEventRepository;
+
+import tech.bananaz.bot.models.Contract;
+import tech.bananaz.bot.models.ContractCollection;
+import tech.bananaz.bot.models.ListingConfig;
+import tech.bananaz.bot.models.ListingsProperties;
+import tech.bananaz.bot.repositories.ListingConfigRepository;
+import tech.bananaz.bot.repositories.ListingEventRepository;
 
 @Component
 public class RunetimeScheduler {
@@ -42,7 +43,6 @@ public class RunetimeScheduler {
 			this.contracts.addContract(watcher);
 		}
 		LOGGER.info("--- Init the UpdateScheduler ---");
-		//this.uScheduler.buildUpdateScheduler(this.contracts);
 		this.uScheduler.start();
 	}
 }

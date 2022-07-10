@@ -1,4 +1,4 @@
-package com.aaronrenner.discordnftbot.utils;
+package tech.bananaz.bot.utils;
 
 import java.net.URI;
 import java.time.Instant;
