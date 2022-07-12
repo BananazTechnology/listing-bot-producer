@@ -56,6 +56,7 @@ public class ListingEvent implements Comparable<ListingEvent> {
 	private Instant    createdDate;
 	private Instant    startTime;
 	private Instant    endTime;
+	@Column(columnDefinition = "VARCHAR(50)")
 	private String     tokenId;
 	@Column(columnDefinition = "VARCHAR(75)")
 	private String     collectionName;
