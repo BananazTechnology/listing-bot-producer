@@ -152,10 +152,11 @@ public class ListingsScheduler extends TimerTask {
 					JSONObject listing = (JSONObject) events.get(i);
 					int id = Integer.valueOf(listing.getAsString("id"));
 					if(id > this.previousLooksId) {
+						// Build event
 						ListingEvent event    = new ListingEvent(this.contract);
 						event.buildLooksRare(listing);
 						
-						/** Log in terminal */
+						// Log in terminal
 						logInfoNewListing(event);
 
 						// Write, ensure not exists to not overwrite existing data
