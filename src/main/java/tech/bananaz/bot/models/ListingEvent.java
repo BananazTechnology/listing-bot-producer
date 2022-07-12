@@ -3,6 +3,8 @@ package tech.bananaz.bot.models;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.Instant;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -30,55 +32,56 @@ import static java.util.Objects.isNull;
 @ToString(includeFieldNames=true)
 @Data
 @Entity
-@Table(name = "listingEvent")
+@Table(name = "listing_event")
 public class ListingEvent implements Comparable<ListingEvent> {
 	
 	// Private / Transient
-	private static final DecimalFormat dFormat = new DecimalFormat("####,###,###.00");
-	private static final String DF_API_URL = "http://proxy.kong.aaronrenner.com/api/rarity/deadfellaz/";
-	private static final String GEISHA_API_URL = "http://proxy.kong.aaronrenner.com/api/rarity/geisha/";
+	private static final DecimalFormat dFormat  = new DecimalFormat("####,###,###.00");
+	private static final String DF_API_URL      = "http://proxy.aaronrenner.com/api/rarity/deadfellaz/";
+	private static final String GEISHA_API_URL  = "http://proxy.aaronrenner.com/api/rarity/geisha/";
 	private static final String AUTO_RARITY_URL = "https://api.traitsniper.com/api/projects/%s/nfts?token_id=%s&trait_count=true&trait_norm=true";
 	private static final String ETHERSCAN_URL   = "https://etherscan.io/address/";
 	private static final String SOLSCAN_URL     = "https://solscan.io/address/";
-	private static UrlUtils urlUtils   = new UrlUtils();
-	private static ENSUtils ensUtils   = new ENSUtils();
-	private static CryptoConvertUtils convert = new CryptoConvertUtils();
+	private static UrlUtils urlUtils   			= new UrlUtils();
+	private static ENSUtils ensUtils   		    = new ENSUtils();
+	private static CryptoConvertUtils convert   = new CryptoConvertUtils();
 	@Transient
 	private Contract contract;
 	
 	// Required for entity
 	@Id
-	private long   id;
-	private String name;
-	private Instant createdDate;
-	private Instant startTime;
-	private Instant endTime;
-	private String tokenId;
-	private String collectionName;
-	private String collectionImageUrl;
-	private String slug;
-	private String imageUrl;
-	private String permalink;
-	private int	   quantity;
-	private String sellerWalletAddy;
-	private String sellerName;
-	private String sellerUrl;
-	private String displayNameOutput;
-	private String rarity;
-	private String rarityRedirect;
+	private long       id;
+	private String     name;
+	private Instant    createdDate;
+	private Instant    startTime;
+	private Instant    endTime;
+	private String     tokenId;
+	private String     collectionName;
+	private String     collectionImageUrl;
+	private String     slug;
+	private String     imageUrl;
+	private String     permalink;
+	private int	       quantity;
+	private String     sellerWalletAddy;
+	private String     sellerName;
+	private String     sellerUrl;
+	private String     displayNameOutput;
+	private String     rarity;
+	private String     rarityRedirect;
 	private BigDecimal listingPriceInCrypto;
 	private BigDecimal listingPriceInUsd;
-	private String listingAmoutOutput;
+	private String     listingAmoutOutput;
 	@Enumerated( EnumType.STRING )
-	private Ticker cryptoPaymentType;
+	private Ticker     cryptoPaymentType;
 	@Enumerated( EnumType.STRING )
 	private RarityEngine engine;
 	@Enumerated( EnumType.STRING )
-	private MarketPlace market;
+	private MarketPlace  market;
 	// These last few items are for the consumer
-	private long contractId;
-	private String consumedBy;
-	private boolean consumed;
+	private long         contractId;
+	private String       consumedBy;
+	@Column(nullable = false, columnDefinition="TINYINT(1) UNSIGNED DEFAULT 0")
+	private boolean      consumed;
 	
 	public ListingEvent() {}
 	
@@ -125,7 +128,6 @@ public class ListingEvent implements Comparable<ListingEvent> {
 		// Process final things to complete the object
 		getRarity();
 		this.contractId = this.contract.getId();
-		this.consumed = false;
 	}
 	
 	public void build(JSONObject openSeaEvent) {
@@ -212,7 +214,6 @@ public class ListingEvent implements Comparable<ListingEvent> {
 		// Process final things to complete the object
 		getRarity();
 		this.contractId = this.contract.getId();
-		this.consumed = false;
 	}
 	
 	private String getNftDisplayName(String nftName, String collectionName, String tokenId) throws NullPointerException {
