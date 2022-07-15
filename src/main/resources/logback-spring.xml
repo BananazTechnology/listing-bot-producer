@@ -3,12 +3,12 @@
    <include resource="org/springframework/boot/logging/logback/base.xml"/>
    <appender name = "FILE" class = "ch.qos.logback.core.FileAppender">
       <encoder>
-        <pattern>%d [%thread] %-5level %logger{35} - %msg %n</pattern>
+        <pattern>%d [%thread] %-5level %logger - %msg %n</pattern>
       </encoder>
-      <File>/tmp/nftBotRuntime.log</File>
+      <File>/tmp/runtimeLog.log</File>
    </appender>
    
-   <logger name="tech.bananaz" level="DEBUG" />
+   <logger name="tech.bananaz" level="INFO" />
    <root level="INFO">
    	  <appender-ref ref="FILE" />
    </root>

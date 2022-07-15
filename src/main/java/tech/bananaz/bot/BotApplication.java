@@ -40,9 +40,9 @@ public class BotApplication {
 	}
 	
 	@Bean
-	public boolean logBuildInfo(@Value("${app.version:unknown}") String version) {
+	public boolean logBuildInfo(@Value("${info.name:unknown}") String name, @Value("${info.version:unknown}") String version) {
 		LOGGER.info("--------");
-		LOGGER.info("BUILD_INFO=[version={}]",version);
+		LOGGER.info("BUILD_INFO=[name={}, version={}]",name, version);
 		LOGGER.info("--------");
 		return true;
 	}

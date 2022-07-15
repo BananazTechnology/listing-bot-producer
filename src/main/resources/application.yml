@@ -1,5 +1,7 @@
-app:
+info:
+  name: @project.artifactId@
   version: @project.version@
+  description: @project.description@
 ---
 server:
   port: 8080
@@ -25,7 +27,7 @@ spring:
     # Custom Banner
     location: classpath:banner.txt
 ---
-# Health check acuator
+# Health check actuator
 management:
   endpoints:
     jmx:
