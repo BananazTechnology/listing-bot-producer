@@ -126,7 +126,7 @@ public class UpdateScheduler extends TimerTask {
 						this.contracts.addContract(watcher);
 						updatedItems.add(String.format("new: %s", watcher));
 					}
-					if(updatedItems.size() > 0) LOGGER.debug("Contract {} updated {}", cont.getId(), Arrays.toString(updatedItems.toArray()));
+					if(updatedItems.size() > 0) LOGGER.debug("Contract {} updated {}", conf.getId(), Arrays.toString(updatedItems.toArray()));
 				} catch(Exception ex) {
 					ex.printStackTrace();
 				}
