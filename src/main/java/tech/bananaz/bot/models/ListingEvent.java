@@ -73,9 +73,9 @@ public class ListingEvent implements Comparable<ListingEvent> {
 	private String       rarity;
 	@Enumerated( EnumType.STRING )
 	@Column(columnDefinition = "VARCHAR(50)")
-	private RarityEngine engine;
+	private RarityEngine rarityEngine;
 	@Column(columnDefinition = "VARCHAR(50)")
-	private String       rarityRedirect;
+	private String       rarityUrl;
 	@Column(columnDefinition = "VARCHAR(25)")
 	private BigDecimal   priceInCrypto;
 	@Column(columnDefinition = "VARCHAR(25)")
@@ -235,9 +235,9 @@ public class ListingEvent implements Comparable<ListingEvent> {
 			this.rarity 		= response.getAsString("rarity");
 			
 			// Formats a URL for Discord
-			this.engine 			  = RarityEngine.RARITY_TOOLS;
+			this.rarityEngine 		  = RarityEngine.RARITY_TOOLS;
 			String raritySlugOverride = (nonNull(this.contract.getRaritySlug())) ? this.contract.getRaritySlug() : this.slug;
-			this.rarityRedirect		  = String.format(RarityEngine.RARITY_TOOLS.getUrl(), raritySlugOverride, this.tokenId);
+			this.rarityUrl		      = String.format(RarityEngine.RARITY_TOOLS.getUrl(), raritySlugOverride, this.tokenId);
 		} catch (Exception e) {}
 	}
 	
@@ -247,9 +247,9 @@ public class ListingEvent implements Comparable<ListingEvent> {
 			this.rarity 		= response.getAsString("rarity");
 			
 			// Formats a URL for Discord
-			this.engine 			  = RarityEngine.RARITY_TOOLS;
+			this.rarityEngine 		  = RarityEngine.RARITY_TOOLS;
 			String raritySlugOverride = (nonNull(this.contract.getRaritySlug())) ? this.contract.getRaritySlug() : this.slug;
-			this.rarityRedirect 	  = String.format(RarityEngine.RARITY_TOOLS.getUrl(), raritySlugOverride, this.tokenId);
+			this.rarityUrl 	  		  = String.format(RarityEngine.RARITY_TOOLS.getUrl(), raritySlugOverride, this.tokenId);
 		} catch (Exception e) {}
 	}
 	
@@ -266,8 +266,8 @@ public class ListingEvent implements Comparable<ListingEvent> {
 			this.rarity 			= firstItem.getAsString("rarity_rank");
 			
 			// Formats a URL for Discord
-			this.engine 		= RarityEngine.TRAIT_SNIPER;
-			this.rarityRedirect = String.format(RarityEngine.TRAIT_SNIPER.getUrl(), this.contract.getContractAddress(), this.tokenId);
+			this.rarityEngine 		= RarityEngine.TRAIT_SNIPER;
+			this.rarityUrl		    = String.format(RarityEngine.TRAIT_SNIPER.getUrl(), this.contract.getContractAddress(), this.tokenId);
 		} catch (Exception e) {}
 	}
 	
@@ -304,7 +304,7 @@ public class ListingEvent implements Comparable<ListingEvent> {
 	}
 	
 	public String getHash() {
-		return String.format("%s:%s", this.sellerWalletAddy, this.tokenId);
+		return String.format("%s:%s", this.sellerWalletAddy, this.priceInCrypto.toPlainString());
 	}
 	
 	private void parseCollectionInfo(JSONObject asset) {
