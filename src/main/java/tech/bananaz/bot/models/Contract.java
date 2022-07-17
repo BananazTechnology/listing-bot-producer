@@ -38,10 +38,6 @@ public class Contract {
 	private boolean isSolana 		  = false;
 	// For bundles support
 	private boolean showBundles 	  = true;
-	@SuppressWarnings("unused")
-	private long lastOpenseaId;
-	@SuppressWarnings("unused")
-	private String lastOpenseaHash;
 
 	// Discord Settings
 	// If enabled, will auto pull from LooksRare for all
@@ -51,8 +47,6 @@ public class Contract {
 	
 	// LooksRare settings
 	private boolean excludeLooks 	  = false;
-	@SuppressWarnings("unused")
-	private long lastLooksrareId;
 
 	public void startListingsScheduler() {
 		newRequest = new ListingsScheduler(this);

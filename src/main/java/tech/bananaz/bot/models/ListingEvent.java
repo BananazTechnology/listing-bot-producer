@@ -17,6 +17,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import tech.bananaz.bot.utils.CryptoConvertUtils;
 import tech.bananaz.bot.utils.ENSUtils;
+import tech.bananaz.bot.utils.EventType;
 import tech.bananaz.bot.utils.MarketPlace;
 import tech.bananaz.bot.utils.RarityEngine;
 import tech.bananaz.bot.utils.Ticker;
@@ -28,7 +29,7 @@ import static java.util.Objects.isNull;
 @ToString(includeFieldNames=true)
 @Data
 @Entity
-@Table(name = "listing_event")
+@Table(name = "event")
 public class ListingEvent implements Comparable<ListingEvent> {
 	
 	// Private / Transient
@@ -52,7 +53,7 @@ public class ListingEvent implements Comparable<ListingEvent> {
 	private Instant      startTime;
 	private Instant      endTime;
 	@Column(columnDefinition = "VARCHAR(50)")
-	private String     tokenId;
+	private String       tokenId;
 	@Column(columnDefinition = "VARCHAR(75)")
 	private String       collectionName;
 	private String       collectionImageUrl;
@@ -82,6 +83,9 @@ public class ListingEvent implements Comparable<ListingEvent> {
 	@Enumerated( EnumType.STRING )
 	@Column(columnDefinition = "VARCHAR(6)")
 	private Ticker       cryptoType;
+	@Enumerated( EnumType.STRING )
+	@Column(columnDefinition = "VARCHAR(7)")
+	private EventType    eventType;
 	@Enumerated( EnumType.STRING )
 	@Column(columnDefinition = "VARCHAR(50)")
 	private MarketPlace  market;
@@ -131,9 +135,10 @@ public class ListingEvent implements Comparable<ListingEvent> {
 		this.quantity 	 	   = Integer.valueOf(order.getAsString("amount"));
 		
 		// Process final things to complete the object
-		this.market 			= MarketPlace.LOOKSRARE;
-		this.cryptoType  = Ticker.ETH;
-		this.configId 	    	= this.contract.getId();
+		this.market 		   = MarketPlace.LOOKSRARE;
+		this.cryptoType  	   = Ticker.ETH;
+		this.eventType		   = EventType.LISTING;
+		this.configId 	       = this.contract.getId();
 		getImageUrl();
 		getRarity();
 	}
@@ -200,8 +205,9 @@ public class ListingEvent implements Comparable<ListingEvent> {
 		}
 		
 		// Process final things to complete the object
-		this.market 			 = MarketPlace.OPENSEA;
-		this.configId 		 	 = this.contract.getId();
+		this.market    = MarketPlace.OPENSEA;
+		this.configId  = this.contract.getId();
+		this.eventType = EventType.LISTING;
 		getImageUrl();
 		getRarity();
 	}
