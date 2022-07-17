@@ -29,9 +29,9 @@ public class ListingsScheduler extends TimerTask {
 	@Getter
 	private String openSeaLastHash  = "";
 	@Getter
-	private int  previousLooksId 	= 0;
+	private int  previousLooksId 	= 1;
 	@Getter
-	private long openSeaIdBuffer	= 0;
+	private long openSeaIdBuffer	= 1;
 	private Timer timer 		 	= new Timer(); // creating timer
     private TimerTask task; // creating timer task
 	private static final Logger LOGGER = LoggerFactory.getLogger(ListingsScheduler.class);
@@ -122,7 +122,7 @@ public class ListingsScheduler extends TimerTask {
 						if(this.contract.isShowBundles() || event.getQuantity() == 1) {
 							if(event.getId() > this.openSeaIdBuffer && !event.getHash().equalsIgnoreCase(this.openSeaLastHash)) {
 								// Log in terminal
-								logInfoNewListing(event);
+								logInfoNewEvent(event);
 
 								// Write, ensure not exists to not overwrite existing data
 								if(!this.contract.getEvents().existsById(event.getId()))
@@ -157,7 +157,7 @@ public class ListingsScheduler extends TimerTask {
 						event.buildLooksRare(listing);
 						
 						// Log in terminal
-						logInfoNewListing(event);
+						logInfoNewEvent(event);
 
 						// Write, ensure not exists to not overwrite existing data
 						if(!this.contract.getEvents().existsById(event.getId()))
@@ -172,7 +172,7 @@ public class ListingsScheduler extends TimerTask {
 		}
 	}
 	
-	private void logInfoNewListing(ListingEvent event) {
+	private void logInfoNewEvent(ListingEvent event) {
 		LOGGER.info("{}, {}", event.toString(),this.contract.toString());
 	}
 }

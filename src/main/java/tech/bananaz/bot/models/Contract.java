@@ -7,7 +7,6 @@ import lombok.ToString.Exclude;
 import tech.bananaz.bot.repositories.ListingConfigRepository;
 import tech.bananaz.bot.repositories.ListingEventRepository;
 import tech.bananaz.bot.services.ListingsScheduler;
-import tech.bananaz.bot.utils.RarityEngine;
 
 @ToString(includeFieldNames=true)
 @Data
@@ -47,8 +46,6 @@ public class Contract {
 	// Discord Settings
 	// If enabled, will auto pull from LooksRare for all
 	private boolean autoRarity 		  = false;
-	// Proves the URLs for formatting Discord
-	private RarityEngine engine;
 	// For when the slug in URL is not the same as Contract slug
 	private String raritySlug;
 	
