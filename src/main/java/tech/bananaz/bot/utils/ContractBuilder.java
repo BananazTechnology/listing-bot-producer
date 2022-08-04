@@ -1,40 +1,38 @@
-package tech.bananaz.bot.models;
+package tech.bananaz.bot.utils;
 
-import static java.util.Objects.nonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import tech.bananaz.bot.repositories.ListingConfigRepository;
-import tech.bananaz.bot.repositories.ListingEventRepository;
-import tech.bananaz.bot.utils.RarityEngine;
+import tech.bananaz.repositories.ListingConfigPagingRepository;
+import tech.bananaz.bot.models.Contract;
+import tech.bananaz.models.Listing;
+import tech.bananaz.repositories.EventPagingRepository;
 
 @Component
-public class ListingsProperties {
+public class ContractBuilder {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(ListingsProperties.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ContractBuilder.class);
 
-	public Contract configProperties(ListingConfig config, ListingConfigRepository configs, ListingEventRepository events) throws RuntimeException, InterruptedException {
+	public Contract configProperties(Listing config, ListingConfigPagingRepository configs, EventPagingRepository events) throws RuntimeException, InterruptedException {
 		Contract output = null;
 		try {
-			// Grab rarityEngine
-			RarityEngine rarityEngine = (nonNull(config.getRarityEngine())) ? RarityEngine.fromString(config.getRarityEngine()): RarityEngine.RARITY_TOOLS;
-
 			// If no server or outputChannel then throw exception
 			output = new Contract();
 			output.setEvents(events);
 			output.setConfigs(configs);
+			output.setConfig(config);
 			output.setId(config.getId());
 			output.setContractAddress(config.getContractAddress());
 			output.setInterval(config.getInterval());
 			output.setExcludeOpensea(config.getExcludeOpensea());
 			output.setExcludeLooks(config.getExcludeLooksrare());
 			output.setAutoRarity(config.getAutoRarity());
-			output.setEngine(rarityEngine);
 			output.setRaritySlug(config.getRaritySlugOverwrite());
-			output.setSlug(config.getContractIsSlug());
+			output.setSlug(config.getIsSlug());
 			output.setShowBundles(config.getShowBundles());
 			output.setSolana(config.getSolanaOnOpensea());
+			// If SOL then address is always a slug
+			if(config.getSolanaOnOpensea()) output.setSlug(true);
 			
 		} catch (Exception e) {
 			LOGGER.error("Check properties {}, Exception: {}", config.toString(), e.getMessage());

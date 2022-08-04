@@ -1,27 +1,25 @@
 package tech.bananaz.bot.services;
 
-import java.util.*;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import tech.bananaz.bot.models.Contract;
 import tech.bananaz.bot.models.ContractCollection;
-import tech.bananaz.bot.models.ListingConfig;
-import tech.bananaz.bot.models.ListingsProperties;
-import tech.bananaz.bot.repositories.ListingConfigRepository;
-import tech.bananaz.bot.repositories.ListingEventRepository;
+import tech.bananaz.bot.utils.ContractBuilder;
+import tech.bananaz.models.Listing;
+import tech.bananaz.repositories.ListingConfigPagingRepository;
+import tech.bananaz.repositories.EventPagingRepository;
 
 @Component
-public class RunetimeScheduler {
+public class RunetimeInitializer {
 	
 	@Autowired
-	private ListingConfigRepository configs;
+	private ListingConfigPagingRepository configs;
 	
 	@Autowired
-	private ListingEventRepository events;
+	private EventPagingRepository events;
 	
 	@Autowired
 	private UpdateScheduler uScheduler;
@@ -29,20 +27,20 @@ public class RunetimeScheduler {
 	@Autowired
 	private ContractCollection contracts;
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(RunetimeScheduler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RunetimeInitializer.class);
 	
 	@PostConstruct
 	public void init() throws RuntimeException, InterruptedException {
-		LOGGER.info("--- Main App Statup ---");
-		List<ListingConfig> listingStartupItems = configs.findAll();
-		for(ListingConfig confItem : listingStartupItems) {
+		LOGGER.debug("--- Main App Statup ---");
+		Iterable<Listing> listingStartupItems = configs.findAll();
+		for(Listing confItem : listingStartupItems) {
 			// Build required components for each entry
-			Contract watcher = new ListingsProperties().configProperties(confItem, this.configs, this.events);
+			Contract watcher = new ContractBuilder().configProperties(confItem, this.configs, this.events);
 			watcher.startListingsScheduler();
 			// Add this to internal memory buffer
 			this.contracts.addContract(watcher);
 		}
-		LOGGER.info("--- Init the UpdateScheduler ---");
+		LOGGER.debug("--- Init the ListingUpdateScheduler ---");
 		this.uScheduler.start();
 	}
 }

@@ -41,6 +41,11 @@ spring:
     url: jdbc:mysql://host:port/DB-Name?createDatabaseIfNotExist=true
     username: username
     password: password
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
 ```
 
 ### Running the Project
@@ -80,15 +85,14 @@ CMD [ "java", \
         "Bot.jar"]
 ```
 
-## Libraries
-
 ### Jump To
-* [Required Dependencies](#spring-boot-required)
-* [Lombok](#lombok)
-* [JSON-Smart](#json-smart)
+* [Required Dependencies](#required)
+* [Included Dependencies](#included)
+  * [JSON Smart](#json-smart)
+  * [MySQL & JPA](#mysql-and-jpa)
 
-### Spring-Boot Required
-<details><summary>Lombok</summary>
+### Required
+You are required to install this into IDE
 * [Lombok - Automated Class Method Generation](https://projectlombok.org/features/all)
 ```pom
 <dependency>
@@ -97,13 +101,29 @@ CMD [ "java", \
     <optional>true</optional>
 </dependency>
 ```
-</details>
+
+### Included
 <details><summary>JSON-Smart</summary>
 * [JSON Parser JAVADOC](https://javadoc.io/doc/net.minidev/json-smart/latest/index.html)
 ```pom
 <dependency>
     <groupId>net.minidev</groupId>
     <artifactId>json-smart</artifactId>
+</dependency>
+```
+</details>
+<details><summary>MySQL and JPA</summary>
+* [MySQL](https://mvnrepository.com/artifact/mysql/mysql-connector-java)
+* [JPA](https://spring.io/guides/gs/accessing-data-jpa/)
+```pom
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
 </dependency>
 ```
 </details>

@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.ToString;
 import lombok.ToString.Exclude;
-import tech.bananaz.bot.repositories.ListingConfigRepository;
-import tech.bananaz.bot.repositories.ListingEventRepository;
-import tech.bananaz.bot.services.ListingsScheduler;
-import tech.bananaz.bot.utils.RarityEngine;
+import tech.bananaz.repositories.ListingConfigPagingRepository;
+import tech.bananaz.repositories.EventPagingRepository;
+import tech.bananaz.bot.services.ListingScheduler;
+import tech.bananaz.models.Listing;
 
 @ToString(includeFieldNames=true)
 @Data
@@ -15,15 +15,15 @@ public class Contract {
 	
 	@Exclude
 	@JsonIgnore
-	private ListingsScheduler newRequest;
+	private ListingScheduler newRequest;
 	
 	@Exclude
 	@JsonIgnore
-	private ListingConfigRepository configs;
+	private ListingConfigPagingRepository configs;
 	
 	@Exclude
 	@JsonIgnore
-	private ListingEventRepository events;
+	private EventPagingRepository events;
 
 	// Pairs from DB definition
 	private long id;
@@ -39,31 +39,30 @@ public class Contract {
 	private boolean isSolana 		  = false;
 	// For bundles support
 	private boolean showBundles 	  = true;
-	@SuppressWarnings("unused")
-	private long lastOpenseaId;
-	@SuppressWarnings("unused")
-	private String lastOpenseaHash;
 
 	// Discord Settings
 	// If enabled, will auto pull from LooksRare for all
 	private boolean autoRarity 		  = false;
-	// Proves the URLs for formatting Discord
-	private RarityEngine engine;
 	// For when the slug in URL is not the same as Contract slug
 	private String raritySlug;
 	
 	// LooksRare settings
 	private boolean excludeLooks 	  = false;
-	@SuppressWarnings("unused")
-	private long lastLooksrareId;
+	
+	// To save on DB calls
+	Listing config;
 
 	public void startListingsScheduler() {
-		newRequest = new ListingsScheduler(this);
+		newRequest = new ListingScheduler(this);
 		newRequest.start();
 	}
 	
 	public void stopListingsScheduler() {
 		newRequest.stop();
+	}
+	
+	public boolean getIsScheduleActive() {
+		return this.newRequest.isActive();
 	}
 	
 	public long getLastOpenseaId() {

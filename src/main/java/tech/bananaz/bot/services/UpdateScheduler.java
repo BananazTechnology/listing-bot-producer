@@ -5,29 +5,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import tech.bananaz.bot.models.Contract;
 import tech.bananaz.bot.models.ContractCollection;
-import tech.bananaz.bot.models.ListingConfig;
-import tech.bananaz.bot.models.ListingsProperties;
-import tech.bananaz.bot.repositories.ListingConfigRepository;
-import tech.bananaz.bot.repositories.ListingEventRepository;
-import tech.bananaz.bot.utils.RarityEngine;
-
+import tech.bananaz.bot.utils.ContractBuilder;
+import tech.bananaz.models.Listing;
+import tech.bananaz.repositories.ListingConfigPagingRepository;
+import tech.bananaz.repositories.EventPagingRepository;
 import static java.util.Objects.nonNull;
-import static tech.bananaz.bot.utils.StringUtils.nonEquals;
+import static tech.bananaz.utils.StringUtils.nonEquals;
 
 @Component
 public class UpdateScheduler extends TimerTask {
 	
 	@Autowired
-	private ListingConfigRepository configs;
+	private ListingConfigPagingRepository configs;
 	
 	@Autowired
 	private ContractCollection contracts;
 	
 	@Autowired
-	private ListingEventRepository events;
+	private EventPagingRepository events;
 	
 	/** Important variables needed for Runtime */
 	private final int REFRESH_REQ = 60000;
@@ -40,7 +37,7 @@ public class UpdateScheduler extends TimerTask {
 		if(nonNull(this.contracts)) {
 			this.active = true;
 			this.task   = this;
-			LOGGER.info(String.format("Starting new UpdateScheduler"));
+			LOGGER.info(String.format("Starting new ListingUpdateScheduler"));
 			// Starts this new timer, starts at random time and runs per <interval> milliseconds
 			this.timer.schedule(task, 1, REFRESH_REQ);
 		}
@@ -49,15 +46,15 @@ public class UpdateScheduler extends TimerTask {
 	
 	public boolean stop() {
 		this.active = false;
-		LOGGER.info("Stopping UpdateScheduler");
+		LOGGER.info("Stopping ListingUpdateScheduler");
 		return active;
 	}
 
 	@Override
 	public void run() {
 		if(nonNull(this.contracts) && active) {
-			List<ListingConfig> allListingConfigs = this.configs.findAll();
-			for(ListingConfig conf : allListingConfigs) {
+			Iterable<Listing> allListingConfigs = this.configs.findAll();
+			for(Listing conf : allListingConfigs) {
 				try {
 					List<String> updatedItems = new ArrayList<>();
 					Contract cont = this.contracts.getContractById(conf.getId());
@@ -78,12 +75,6 @@ public class UpdateScheduler extends TimerTask {
 						if(nonEquals(cont.getRaritySlug(), conf.getRaritySlugOverwrite())) {
 							updatedItems.add(String.format("raritySlug: %s->%s", cont.getRaritySlug(), conf.getRaritySlugOverwrite()));
 							cont.setRaritySlug(conf.getRaritySlugOverwrite());
-						}
-						// Rarity Engine
-						RarityEngine rarityEngine = (conf.getRarityEngine() != null) ? RarityEngine.fromString(conf.getRarityEngine()): RarityEngine.RARITY_TOOLS;
-						if(nonEquals(cont.getEngine().toString(), rarityEngine)) {
-							updatedItems.add(String.format("raritySlug: %s->%s", cont.getEngine().toString(), conf.getAutoRarity()));
-							cont.setEngine(rarityEngine);
 						}
 						
 
@@ -119,14 +110,17 @@ public class UpdateScheduler extends TimerTask {
 					else {
 						LOGGER.debug("Object NOT found in memory, building new");
 						// Build required components for each entry
-						Contract watcher = new ListingsProperties().configProperties(conf, this.configs, this.events);
+						Contract watcher = new ContractBuilder().configProperties(conf, this.configs, this.events);
 						// Start the watcher
 						watcher.startListingsScheduler();
 						// Add this to internal memory buffer
 						this.contracts.addContract(watcher);
 						updatedItems.add(String.format("new: %s", watcher));
 					}
-					if(updatedItems.size() > 0) LOGGER.debug("Contract {} updated {}", cont.getId(), Arrays.toString(updatedItems.toArray()));
+					if(updatedItems.size() > 0) {
+						cont.setConfig(conf);
+						LOGGER.debug("Contract {} updated {}", conf.getId(), Arrays.toString(updatedItems.toArray()));
+					}
 				} catch(Exception ex) {
 					ex.printStackTrace();
 				}

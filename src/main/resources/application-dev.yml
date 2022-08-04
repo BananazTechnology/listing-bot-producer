@@ -1,7 +1,10 @@
 # debug: true
 ---
-app:
+info:
+  name: @project.artifactId@
   version: @project.version@
+  description: @project.description@
+  bananazCoreVersion: @bananaz.version@
 ---
 server:
   port: 8080
