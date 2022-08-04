@@ -7,6 +7,7 @@ import lombok.ToString.Exclude;
 import tech.bananaz.repositories.ListingConfigPagingRepository;
 import tech.bananaz.repositories.EventPagingRepository;
 import tech.bananaz.bot.services.ListingScheduler;
+import tech.bananaz.models.Listing;
 
 @ToString(includeFieldNames=true)
 @Data
@@ -47,6 +48,9 @@ public class Contract {
 	
 	// LooksRare settings
 	private boolean excludeLooks 	  = false;
+	
+	// To save on DB calls
+	Listing config;
 
 	public void startListingsScheduler() {
 		newRequest = new ListingScheduler(this);

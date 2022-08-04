@@ -20,6 +20,7 @@ public class ContractBuilder {
 			output = new Contract();
 			output.setEvents(events);
 			output.setConfigs(configs);
+			output.setConfig(config);
 			output.setId(config.getId());
 			output.setContractAddress(config.getContractAddress());
 			output.setInterval(config.getInterval());

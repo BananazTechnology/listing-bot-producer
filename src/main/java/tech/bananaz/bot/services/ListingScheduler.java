@@ -105,7 +105,7 @@ public class ListingScheduler extends TimerTask {
 					// Build event
 					Event e = pUtils.buildOpenSeaEvent(
 										listing, 
-										this.contract.getConfigs().findById(this.contract.getId()).get());
+										this.contract.getConfig());
 					// Append to the end of the List
 					events.add(e);
 				} else break;
@@ -155,7 +155,7 @@ public class ListingScheduler extends TimerTask {
 						// Build event
 						Event e = pUtils.buildLooksRareEvent(
 											listing, 
-											this.contract.getConfigs().findById(this.contract.getId()).get());
+											this.contract.getConfig());
 						
 						// Log in terminal
 						logInfoNewEvent(e);
