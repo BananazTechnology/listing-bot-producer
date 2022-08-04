@@ -61,7 +61,7 @@ public class Contract {
 		newRequest.stop();
 	}
 	
-	public boolean getIsScheduleActive() {
+	public boolean getIsSchedulerActive() {
 		return this.newRequest.isActive();
 	}
 	
