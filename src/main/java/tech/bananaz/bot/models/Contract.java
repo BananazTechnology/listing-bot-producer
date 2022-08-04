@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.ToString;
 import lombok.ToString.Exclude;
-import tech.bananaz.bot.repositories.ListingConfigRepository;
-import tech.bananaz.bot.repositories.ListingEventRepository;
-import tech.bananaz.bot.services.ListingsScheduler;
+import tech.bananaz.repositories.ListingConfigPagingRepository;
+import tech.bananaz.repositories.EventPagingRepository;
+import tech.bananaz.bot.services.ListingScheduler;
 
 @ToString(includeFieldNames=true)
 @Data
@@ -14,15 +14,15 @@ public class Contract {
 	
 	@Exclude
 	@JsonIgnore
-	private ListingsScheduler newRequest;
+	private ListingScheduler newRequest;
 	
 	@Exclude
 	@JsonIgnore
-	private ListingConfigRepository configs;
+	private ListingConfigPagingRepository configs;
 	
 	@Exclude
 	@JsonIgnore
-	private ListingEventRepository events;
+	private EventPagingRepository events;
 
 	// Pairs from DB definition
 	private long id;
@@ -49,12 +49,16 @@ public class Contract {
 	private boolean excludeLooks 	  = false;
 
 	public void startListingsScheduler() {
-		newRequest = new ListingsScheduler(this);
+		newRequest = new ListingScheduler(this);
 		newRequest.start();
 	}
 	
 	public void stopListingsScheduler() {
 		newRequest.stop();
+	}
+	
+	public boolean getIsScheduleActive() {
+		return this.newRequest.isActive();
 	}
 	
 	public long getLastOpenseaId() {

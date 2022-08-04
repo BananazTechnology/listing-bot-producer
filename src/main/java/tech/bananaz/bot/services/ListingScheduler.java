@@ -4,28 +4,23 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import lombok.Getter;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import tech.bananaz.bot.models.Contract;
-import tech.bananaz.bot.models.ListingEvent;
-import tech.bananaz.bot.utils.KeyUtils;
-import tech.bananaz.bot.utils.LooksRareUtils;
-import tech.bananaz.bot.utils.OpenseaUtils;
-
+import tech.bananaz.models.Event;
+import tech.bananaz.utils.*;
 import static java.util.Objects.nonNull;
 
-public class ListingsScheduler extends TimerTask {
+public class ListingScheduler extends TimerTask {
 	
 	// Resources declared in Runtime
 	private OpenseaUtils api;
 	private Contract contract;
 	
 	// Resources and important
+	@Getter
 	private boolean active			= false;
-	private LooksRareUtils looksApi = new LooksRareUtils();
-	private KeyUtils kUtils         = new KeyUtils();
 	@Getter
 	private String openSeaLastHash  = "";
 	@Getter
@@ -33,10 +28,13 @@ public class ListingsScheduler extends TimerTask {
 	@Getter
 	private long openSeaIdBuffer	= 0;
 	private Timer timer 		 	= new Timer(); // creating timer
+	private LooksRareUtils looksApi = new LooksRareUtils();
+	private KeyUtils kUtils         = new KeyUtils();
+	private ParsingUtils pUtils     = new ParsingUtils();
     private TimerTask task; // creating timer task
-	private static final Logger LOGGER = LoggerFactory.getLogger(ListingsScheduler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ListingScheduler.class);
 
-	public ListingsScheduler(Contract contract) {
+	public ListingScheduler(Contract contract) {
 		this.contract = contract;
 		try {
 			this.api = new OpenseaUtils(this.kUtils.getKey());
@@ -75,7 +73,7 @@ public class ListingsScheduler extends TimerTask {
 		if(nonNull(this.contract)) {
 			this.active = true;
 			this.task   = this;
-			LOGGER.info(String.format("Starting new ListingsScheduler in %sms for: %s", startsIn, this.contract.toString()));
+			LOGGER.info(String.format("Starting new ListingScheduler in %sms for: %s", startsIn, this.contract.toString()));
 			// Starts this new timer, starts at random time and runs per <interval> milliseconds
 			this.timer.schedule(task, startsIn , this.contract.getInterval());
 		}
@@ -93,21 +91,23 @@ public class ListingsScheduler extends TimerTask {
 		this.api = new OpenseaUtils(this.kUtils.getKey());
 		JSONObject marketListings = 
 				(!this.contract.isSlug()) ? 
-						this.api.getCollectionListed(this.contract.getContractAddress()) :
-						this.api.getCollectionListedWithSlug(this.contract.getContractAddress());
+						this.api.getEventsListingsAddress(this.contract.getContractAddress()) :
+						this.api.getEventsListingsSlug(this.contract.getContractAddress());
 		JSONArray assetEvents 	  = (JSONArray) marketListings.get("asset_events");
 		
 		if(!assetEvents.isEmpty()) {
-			ArrayList<ListingEvent> events = new ArrayList<>();
+			ArrayList<Event> events = new ArrayList<>();
 			for(int i = 0; i < assetEvents.size(); i++) {
 				// Grab sub-objects in message
-				JSONObject newListing   = (JSONObject) assetEvents.get(i);
-				long id = newListing.getAsNumber("id").longValue();
+				JSONObject listing   = (JSONObject) assetEvents.get(i);
+				long id = listing.getAsNumber("id").longValue();
 				if(id > this.openSeaIdBuffer) {
-					ListingEvent event = new ListingEvent(this.contract);
-					event.build(newListing);
+					// Build event
+					Event e = pUtils.buildOpenSeaEvent(
+										listing, 
+										this.contract.getConfigs().findById(this.contract.getId()).get());
 					// Append to the end of the List
-					events.add(event);
+					events.add(e);
 				} else break;
 			}
 			// Only process with data in events
@@ -118,7 +118,7 @@ public class ListingsScheduler extends TimerTask {
 				if(this.openSeaIdBuffer != 0) {
 					// Process sorted array
 					for(int i = 0; i < events.size(); i++) {
-						ListingEvent event = events.get(i);
+						Event event = events.get(i);
 						if(this.contract.isShowBundles() || event.getQuantity() == 1) {
 							if(event.getId() > this.openSeaIdBuffer && !event.getHash().equalsIgnoreCase(this.openSeaLastHash)) {
 								// Log in terminal
@@ -131,7 +131,7 @@ public class ListingsScheduler extends TimerTask {
 						}
 					}
 				}
-				ListingEvent f0 = events.get(0);
+				Event f0 = events.get(0);
 				if(f0.getId() > this.openSeaIdBuffer) {
 					this.openSeaLastHash = f0.getHash();
 					this.openSeaIdBuffer = f0.getId();
@@ -142,7 +142,7 @@ public class ListingsScheduler extends TimerTask {
 	}
 	
 	private void watchLooksRare() throws Exception {
-		JSONObject payload = this.looksApi.getEvents(this.contract.getContractAddress());
+		JSONObject payload = this.looksApi.getEventsListingsAddress(this.contract.getContractAddress());
 		JSONArray events   = (JSONArray) payload.get("data");
 		
 		if(!events.isEmpty()) {
@@ -153,15 +153,16 @@ public class ListingsScheduler extends TimerTask {
 					int id = Integer.valueOf(listing.getAsString("id"));
 					if(id > this.previousLooksId) {
 						// Build event
-						ListingEvent event    = new ListingEvent(this.contract);
-						event.buildLooksRare(listing);
+						Event e = pUtils.buildOpenSeaEvent(
+											listing, 
+											this.contract.getConfigs().findById(this.contract.getId()).get());
 						
 						// Log in terminal
-						logInfoNewEvent(event);
+						logInfoNewEvent(e);
 
 						// Write, ensure not exists to not overwrite existing data
-						if(!this.contract.getEvents().existsById(event.getId()))
-							this.contract.getEvents().save(event);
+						if(!this.contract.getEvents().existsById(e.getId()))
+							this.contract.getEvents().save(e);
 					} else break;
 				}
 			}
@@ -172,7 +173,7 @@ public class ListingsScheduler extends TimerTask {
 		}
 	}
 	
-	private void logInfoNewEvent(ListingEvent event) {
+	private void logInfoNewEvent(Event event) {
 		LOGGER.info("{}, {}", event.toString(),this.contract.toString());
 	}
 }

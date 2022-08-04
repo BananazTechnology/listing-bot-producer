@@ -13,12 +13,12 @@ import tech.bananaz.bot.models.ContractCollection;
 
 @RestController
 @RequestMapping(value = "/contracts", produces = "application/json")
-public class ContractsController {
+public class ContractController {
 	
 	@Autowired
 	private ContractCollection contracts;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ContractsController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ContractController.class);
 	
 	@GetMapping
 	public ResponseEntity<List<Contract>> readContracts() {

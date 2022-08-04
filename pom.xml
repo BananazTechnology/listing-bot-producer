@@ -8,15 +8,19 @@
 		<version>2.5.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+	
 	<groupId>tech.bananaz</groupId>
 	<artifactId>listing-bot-producer</artifactId>
-	<version>3.3.0</version>
+	<version>4.0.0</version>
 	<name>listing-bot-producer</name>
 	<description>A @spring-projects framework project which loads items into @mysql</description>
+	
 	<properties>
+		<bananaz.version>1.0.0</bananaz.version>
 		<java.version>11</java.version>
-		<sonar.projectKey>listings-producer-bot</sonar.projectKey>
+		<sonar.projectKey>listing-producer-bot</sonar.projectKey>
 	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -54,6 +58,13 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		
+		<!--  Bananaz Tech Core -->
+		<dependency>
+			<groupId>tech.bananaz</groupId>
+			<artifactId>bot-core</artifactId>
+			<version>${bananaz.version}</version>
 		</dependency>
 	</dependencies>
 
