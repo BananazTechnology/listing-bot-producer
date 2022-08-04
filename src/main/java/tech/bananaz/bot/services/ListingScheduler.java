@@ -153,7 +153,7 @@ public class ListingScheduler extends TimerTask {
 					int id = Integer.valueOf(listing.getAsString("id"));
 					if(id > this.previousLooksId) {
 						// Build event
-						Event e = pUtils.buildOpenSeaEvent(
+						Event e = pUtils.buildLooksRareEvent(
 											listing, 
 											this.contract.getConfigs().findById(this.contract.getId()).get());
 						
