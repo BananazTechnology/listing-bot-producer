@@ -50,6 +50,8 @@ public class Contract {
 	private boolean excludeLooks 	  = false;
 	
 	// To save on DB calls
+	@Exclude
+	@JsonIgnore
 	Listing config;
 
 	public void startListingsScheduler() {
@@ -71,9 +73,5 @@ public class Contract {
 	
 	public long getLastLooksrareId() {
 		return this.newRequest.getPreviousLooksId();
-	}
-	
-	public String getLastOpenseaHash() {
-		return this.newRequest.getOpenSeaLastHash();
 	}
 }

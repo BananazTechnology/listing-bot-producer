@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: listing-bot-producer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: listing-bot-producer
+  name: listing-bot-producer-svc
+spec:
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    service: listing-bot-producer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: listing-bot-producer
+  name: listing-bot-producer
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      service: listing-bot-producer
+  template:
+    metadata:
+      labels:
+        service: listing-bot-producer
+    spec:
+      restartPolicy: Always
+      containers:
+        - env:
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "abcd1234!"
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://10.0.0.0:3306/MarketBotConfigs?createDatabaseIfNotExist=true
+            - name: SPRING_DATASOURCE_USERNAME
+              value: marketbots-svc-acct
+          image: bananaztech/listing-bot-producer:latest
+          imagePullPolicy: Always
+          name: listing-bot-producer
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              memory: 1G
+              cpu: 300m
+            requests:
+              memory: 750Mi
+              cpu: 250m
+---
