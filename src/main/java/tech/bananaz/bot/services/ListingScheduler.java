@@ -9,6 +9,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import tech.bananaz.bot.models.Contract;
 import tech.bananaz.models.Event;
+import tech.bananaz.repositories.EventPagingRepository;
 import tech.bananaz.utils.*;
 import static java.util.Objects.nonNull;
 
@@ -21,8 +22,6 @@ public class ListingScheduler extends TimerTask {
 	// Resources and important
 	@Getter
 	private boolean active			= false;
-	@Getter
-	private String openSeaLastHash  = "";
 	@Getter
 	private long previousLooksId 	= 0;
 	@Getter
@@ -87,6 +86,9 @@ public class ListingScheduler extends TimerTask {
 	}
 	
 	private void watchListings() throws Exception {
+		// Grab events repository
+		EventPagingRepository repo = this.contract.getEvents();
+		
 		// Refresh OpenSea key before every use
 		this.api = new OpenseaUtils(this.kUtils.getKey());
 		JSONObject marketListings = 
@@ -120,28 +122,28 @@ public class ListingScheduler extends TimerTask {
 					for(int i = 0; i < events.size(); i++) {
 						Event event = events.get(i);
 						if(this.contract.isShowBundles() || event.getQuantity() == 1) {
-							if(event.getId() > this.openSeaIdBuffer && !event.getHash().equalsIgnoreCase(this.openSeaLastHash)) {
+							if(event.getId() > this.openSeaIdBuffer && !repo.existsByHash(event.getHash())) {
 								// Log in terminal
 								logInfoNewEvent(event);
 
 								// Write, ensure not exists to not overwrite existing data
-								if(!this.contract.getEvents().existsById(event.getId()))
-									this.contract.getEvents().save(event);
+								if(!repo.existsById(event.getId()))
+									repo.save(event);
 							} else break;
 						}
 					}
 				}
 				Event f0 = events.get(0);
-				if(f0.getId() > this.openSeaIdBuffer) {
-					this.openSeaLastHash = f0.getHash();
-					this.openSeaIdBuffer = f0.getId();
-				}
+				if(f0.getId() > this.openSeaIdBuffer) this.openSeaIdBuffer = f0.getId();
 			}
 			if(events.size() == 0) LOGGER.info(String.format("No listings found this OpenSea loop: %s", this.contract.toString()));
 		}
 	}
 	
 	private void watchLooksRare() throws Exception {
+		// Grab events repository
+		EventPagingRepository repo = this.contract.getEvents();
+		
 		JSONObject payload = this.looksApi.getEventsListingsAddress(this.contract.getContractAddress());
 		JSONArray events   = (JSONArray) payload.get("data");
 		
@@ -161,8 +163,8 @@ public class ListingScheduler extends TimerTask {
 						logInfoNewEvent(e);
 
 						// Write, ensure not exists to not overwrite existing data
-						if(!this.contract.getEvents().existsById(e.getId()))
-							this.contract.getEvents().save(e);
+						if(!repo.existsById(e.getId()))
+							repo.save(e);
 					} else break;
 				}
 			}
