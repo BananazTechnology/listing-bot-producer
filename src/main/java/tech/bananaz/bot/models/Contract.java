@@ -74,8 +74,4 @@ public class Contract {
 	public long getLastLooksrareId() {
 		return this.newRequest.getPreviousLooksId();
 	}
-	
-	public String getLastOpenseaHash() {
-		return this.newRequest.getOpenSeaLastHash();
-	}
 }
