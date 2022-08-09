@@ -13,7 +13,7 @@ import tech.bananaz.repositories.EventPagingRepository;
 import tech.bananaz.utils.*;
 import static java.util.Objects.nonNull;
 
-public class ListingScheduler extends TimerTask {
+public class EventScheduler extends TimerTask {
 	
 	// Resources declared in Runtime
 	private OpenseaUtils api;
@@ -30,10 +30,11 @@ public class ListingScheduler extends TimerTask {
 	private LooksRareUtils looksApi = new LooksRareUtils();
 	private KeyUtils kUtils         = new KeyUtils();
 	private ParsingUtils pUtils     = new ParsingUtils();
+	private String openSeaKey   	= "0";
     private TimerTask task; // creating timer task
-	private static final Logger LOGGER = LoggerFactory.getLogger(ListingScheduler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EventScheduler.class);
 
-	public ListingScheduler(Contract contract) {
+	public EventScheduler(Contract contract) {
 		this.contract = contract;
 		try {
 			this.api = new OpenseaUtils(this.kUtils.getKey());
@@ -72,7 +73,7 @@ public class ListingScheduler extends TimerTask {
 		if(nonNull(this.contract)) {
 			this.active = true;
 			this.task   = this;
-			LOGGER.info(String.format("Starting new ListingScheduler in %sms for: %s", startsIn, this.contract.toString()));
+			LOGGER.info(String.format("Starting new EventScheduler in %sms for: %s", startsIn, this.contract.toString()));
 			// Starts this new timer, starts at random time and runs per <interval> milliseconds
 			this.timer.schedule(task, startsIn , this.contract.getInterval());
 		}
@@ -81,7 +82,7 @@ public class ListingScheduler extends TimerTask {
 	
 	public boolean stop() {
 		this.active = false;
-		LOGGER.info("Stopping ListingScheduler on " + this.contract.toString());
+		LOGGER.info("Stopping EventScheduler on " + this.contract.toString());
 		return this.active;
 	}
 	
@@ -89,14 +90,24 @@ public class ListingScheduler extends TimerTask {
 		// Grab events repository
 		EventPagingRepository repo = this.contract.getEvents();
 		
-		// Refresh OpenSea key before every use
-		this.api = new OpenseaUtils(this.kUtils.getKey());
+		// Refresh OpenSea key if we can
+		try {
+			this.openSeaKey = this.kUtils.getKey();
+		} catch (Exception e) {
+			LOGGER.error("Failed on OpenSea key get exception {}", e.getMessage());
+		}
+		
+		// Init our OpenSea REST interface
+		this.api = new OpenseaUtils(this.openSeaKey);
+		
+		// Make GET request for data
 		JSONObject marketListings = 
 				(!this.contract.isSlug()) ? 
 						this.api.getEventsListingsAddress(this.contract.getContractAddress()) :
 						this.api.getEventsListingsSlug(this.contract.getContractAddress());
 		JSONArray assetEvents 	  = (JSONArray) marketListings.get("asset_events");
 		
+		// Process the response from OpenSea API
 		if(!assetEvents.isEmpty()) {
 			ArrayList<Event> events = new ArrayList<>();
 			for(int i = 0; i < assetEvents.size(); i++) {

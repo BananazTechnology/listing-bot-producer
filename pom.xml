@@ -11,7 +11,7 @@
 	
 	<groupId>tech.bananaz</groupId>
 	<artifactId>listing-bot-producer</artifactId>
-	<version>5.0.0</version>
+	<version>5.0.1</version>
 	<name>listing-bot-producer</name>
 	<description>A @spring-projects framework project which loads items into @mysql</description>
 	

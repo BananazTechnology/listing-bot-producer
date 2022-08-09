@@ -6,7 +6,7 @@ import lombok.ToString;
 import lombok.ToString.Exclude;
 import tech.bananaz.repositories.ListingConfigPagingRepository;
 import tech.bananaz.repositories.EventPagingRepository;
-import tech.bananaz.bot.services.ListingScheduler;
+import tech.bananaz.bot.services.EventScheduler;
 import tech.bananaz.models.Listing;
 
 @ToString(includeFieldNames=true)
@@ -15,7 +15,7 @@ public class Contract {
 	
 	@Exclude
 	@JsonIgnore
-	private ListingScheduler newRequest;
+	private EventScheduler newRequest;
 	
 	@Exclude
 	@JsonIgnore
@@ -55,7 +55,7 @@ public class Contract {
 	Listing config;
 
 	public void startListingsScheduler() {
-		newRequest = new ListingScheduler(this);
+		newRequest = new EventScheduler(this);
 		newRequest.start();
 	}
 	
