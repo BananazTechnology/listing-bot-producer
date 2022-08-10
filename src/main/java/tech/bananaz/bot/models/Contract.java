@@ -35,8 +35,6 @@ public class Contract {
 	private boolean excludeOpensea 	  = false;
 	// Support for slug based API requests in OpenSea
 	private boolean isSlug 			  = false;
-	// Is Solana on OpenSea
-	private boolean isSolana 		  = false;
 	// For bundles support
 	private boolean showBundles 	  = true;
 

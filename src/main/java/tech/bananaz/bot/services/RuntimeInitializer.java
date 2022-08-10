@@ -41,7 +41,7 @@ public class RuntimeInitializer {
 		Iterable<Listing> listingStartupItems = configs.findAll();
 		for(Listing confItem : listingStartupItems) {
 			try {
-				Listing decryptedListing = decryptListing(key, confItem);
+				Listing decryptedListing = decryptListing(this.key, confItem);
 				// Build required components for each entry
 				Contract watcher = new ContractBuilder().configProperties(decryptedListing, this.configs, this.events);
 				watcher.startListingsScheduler();

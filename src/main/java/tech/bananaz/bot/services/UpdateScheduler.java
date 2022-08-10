@@ -113,6 +113,16 @@ public class UpdateScheduler extends TimerTask {
 							updatedItems.add(String.format("active: %s->%s", cont.isActive(), decryptedConf.getActive()));
 							cont.setActive(decryptedConf.getActive());
 						}
+						// Slug
+						if(nonEquals(cont.isSlug(), decryptedConf.getIsSlug())) {
+							updatedItems.add(String.format("isSlug: %s->%s", cont.isSlug(), "true"));
+							cont.setSlug(decryptedConf.getIsSlug());
+						}
+						// If Solana or Polygon set slug
+						if(decryptedConf.getSolanaOnOpensea() || decryptedConf.getPolygonOnOpensea()) {
+							updatedItems.add(String.format("isSlug: %s->%s", cont.isSlug(), "true"));
+							cont.setSlug(true);
+						}
 
 					} 
 					// Add new contract
