@@ -30,9 +30,9 @@ public class ContractBuilder {
 			output.setRaritySlug(config.getRaritySlugOverwrite());
 			output.setSlug(config.getIsSlug());
 			output.setShowBundles(config.getShowBundles());
-			output.setSolana(config.getSolanaOnOpensea());
 			// If SOL then address is always a slug
 			if(config.getSolanaOnOpensea()) output.setSlug(true);
+			if(config.getPolygonOnOpensea()) output.setSlug(true);
 			
 		} catch (Exception e) {
 			LOGGER.error("Check properties {}, Exception: {}", config.toString(), e.getMessage());
