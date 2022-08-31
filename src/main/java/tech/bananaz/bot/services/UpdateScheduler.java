@@ -80,19 +80,14 @@ public class UpdateScheduler extends TimerTask {
 							updatedItems.add(String.format("interval: %s->%s", cont.getInterval(), decryptedConf.getInterval()));
 							cont.setInterval(decryptedConf.getInterval());
 						}
-						// Rarity Slug
-						if(nonEquals(cont.getRaritySlug(), decryptedConf.getRaritySlugOverwrite())) {
-							updatedItems.add(String.format("raritySlug: %s->%s", cont.getRaritySlug(), decryptedConf.getRaritySlugOverwrite()));
-							cont.setRaritySlug(decryptedConf.getRaritySlugOverwrite());
+						// Rarity
+						if(nonEquals(cont.getRarityEngine(), decryptedConf.getRarityEngine())) {
+							updatedItems.add(String.format("rarityEngine: %s->%s", cont.getRarityEngine(), decryptedConf.getRarityEngine()));
+							cont.setRarityEngine(decryptedConf.getRarityEngine());
 						}
 						
 
 						// Booleans
-						// Auto Rarity
-						if(nonEquals(cont.isAutoRarity(), decryptedConf.getAutoRarity())) {
-							updatedItems.add(String.format("autoRarity: %s->%s", cont.isAutoRarity(), decryptedConf.getAutoRarity()));
-							cont.setAutoRarity(decryptedConf.getAutoRarity());
-						}
 						// Show Bundles
 						if(nonEquals(cont.isShowBundles(), decryptedConf.getShowBundles())) {
 							updatedItems.add(String.format("showBundles: %s->%s", cont.isShowBundles(), decryptedConf.getShowBundles()));
@@ -120,8 +115,10 @@ public class UpdateScheduler extends TimerTask {
 						}
 						// If Solana or Polygon set slug
 						if(decryptedConf.getSolanaOnOpensea() || decryptedConf.getPolygonOnOpensea()) {
-							updatedItems.add(String.format("isSlug: %s->%s", cont.isSlug(), "true"));
-							cont.setSlug(true);
+							if(!cont.isSlug()) {
+								updatedItems.add(String.format("isSlug: %s->%s", cont.isSlug(), "true"));
+								cont.setSlug(true);
+							}
 						}
 
 					} 
@@ -142,7 +139,7 @@ public class UpdateScheduler extends TimerTask {
 					}
 					if(updatedItems.size() > 0) {
 						if(nonNull(cont)) cont.setConfig(conf);
-						LOGGER.debug("Contract {} updated {}", conf.getId(), Arrays.toString(updatedItems.toArray()));
+						LOGGER.info("Contract {} updated {}", conf.getId(), Arrays.toString(updatedItems.toArray()));
 					}
 				} catch(Exception ex) {
 					LOGGER.error("Failed inital parsing on id {}, exception {}", conf.getId(), ex.getMessage());

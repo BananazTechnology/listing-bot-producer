@@ -7,6 +7,7 @@ import lombok.ToString.Exclude;
 import tech.bananaz.repositories.ListingConfigPagingRepository;
 import tech.bananaz.repositories.EventPagingRepository;
 import tech.bananaz.bot.services.EventScheduler;
+import tech.bananaz.enums.RarityEngine;
 import tech.bananaz.models.Listing;
 
 @ToString(includeFieldNames=true)
@@ -29,6 +30,7 @@ public class Contract {
 	private long id;
 	private String contractAddress;
 	private int interval;
+	private RarityEngine rarityEngine;
 	private boolean active 			  = true;
 
 	// OpenSea settings
@@ -37,12 +39,6 @@ public class Contract {
 	private boolean isSlug 			  = false;
 	// For bundles support
 	private boolean showBundles 	  = true;
-
-	// Discord Settings
-	// If enabled, will auto pull from LooksRare for all
-	private boolean autoRarity 		  = false;
-	// For when the slug in URL is not the same as Contract slug
-	private String raritySlug;
 	
 	// LooksRare settings
 	private boolean excludeLooks 	  = false;
