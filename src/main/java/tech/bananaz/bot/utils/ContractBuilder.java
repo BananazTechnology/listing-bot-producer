@@ -26,8 +26,7 @@ public class ContractBuilder {
 			output.setInterval(config.getInterval());
 			output.setExcludeOpensea(config.getExcludeOpensea());
 			output.setExcludeLooks(config.getExcludeLooksrare());
-			output.setAutoRarity(config.getAutoRarity());
-			output.setRaritySlug(config.getRaritySlugOverwrite());
+			output.setRarityEngine(config.getRarityEngine());
 			output.setSlug(config.getIsSlug());
 			output.setShowBundles(config.getShowBundles());
 			// If SOL then address is always a slug
