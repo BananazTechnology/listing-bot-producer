@@ -197,7 +197,6 @@ public class EventScheduler extends TimerTask {
 								logInfoNewEvent(event);
 
 								// Write, ensure not exists to not overwrite existing data
-								// Write, ensure not exists to not overwrite existing data
 								try {
 									if(!repo.existsById(event.getId()))
 										repo.save(event);
