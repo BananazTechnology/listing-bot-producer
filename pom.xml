@@ -11,12 +11,12 @@
 	
 	<groupId>tech.bananaz</groupId>
 	<artifactId>listing-bot-producer</artifactId>
-	<version>5.5.3</version>
+	<version>5.6.0</version>
 	<name>listing-bot-producer</name>
 	<description>A @spring-projects framework project which loads items into @mysql</description>
 	
 	<properties>
-		<bananaz.version>1.8.3</bananaz.version>
+		<bananaz.version>1.9.0</bananaz.version>
 		<java.version>11</java.version>
 		<sonar.projectKey>listing-producer-bot</sonar.projectKey>
 	</properties>
