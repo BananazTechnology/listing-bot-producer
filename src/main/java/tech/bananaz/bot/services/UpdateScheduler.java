@@ -59,91 +59,95 @@ public class UpdateScheduler extends TimerTask {
 	@Override
 	public void run() {
 		if(nonNull(this.contracts) && active) {
-			Iterable<Listing> allListingConfigs = this.configs.findAll();
-			for(Listing conf : allListingConfigs) {
-				try {
-					// Must use decrypted values
-					Listing decryptedConf = decryptListing(this.key, conf);
-					
-					List<String> updatedItems = new ArrayList<>();
-					Contract cont = this.contracts.getContractById(decryptedConf.getId());
-					// Update existing object in memory
-					if(nonNull(cont)) {
-						// Strings and Integers
-						// Contract Address
-						if(nonEquals(cont.getContractAddress(), decryptedConf.getContractAddress())) {
-							updatedItems.add(String.format("contractAddress: %s->%s", cont.getContractAddress(), decryptedConf.getContractAddress()));
-							cont.setContractAddress(decryptedConf.getContractAddress());
-						}
-						// Interval
-						if(nonEquals(cont.getInterval(), decryptedConf.getInterval())) {
-							updatedItems.add(String.format("interval: %s->%s", cont.getInterval(), decryptedConf.getInterval()));
-							cont.setInterval(decryptedConf.getInterval());
-						}
-						// Rarity
-						if(nonEquals(cont.getRarityEngine(), decryptedConf.getRarityEngine())) {
-							updatedItems.add(String.format("rarityEngine: %s->%s", cont.getRarityEngine(), decryptedConf.getRarityEngine()));
-							cont.setRarityEngine(decryptedConf.getRarityEngine());
-						}
+			try {
+				Iterable<Listing> allListingConfigs = this.configs.findAll();
+				for(Listing conf : allListingConfigs) {
+					try {
+						// Must use decrypted values
+						Listing decryptedConf = decryptListing(this.key, conf);
 						
-
-						// Booleans
-						// Show Bundles
-						if(nonEquals(cont.isShowBundles(), decryptedConf.getShowBundles())) {
-							updatedItems.add(String.format("showBundles: %s->%s", cont.isShowBundles(), decryptedConf.getShowBundles()));
-							cont.setShowBundles(decryptedConf.getShowBundles());
-						}
-						// Exclude OpenSea
-						if(nonEquals(cont.isExcludeOpensea(), decryptedConf.getExcludeOpensea())) {
-							updatedItems.add(String.format("excludeOpensea: %s->%s", cont.isExcludeOpensea(), decryptedConf.getExcludeOpensea()));
-							cont.setExcludeOpensea(decryptedConf.getExcludeOpensea());
-						}
-						// Exclude Looksrare
-						if(nonEquals(cont.isExcludeLooks(), decryptedConf.getExcludeLooksrare())) {
-							updatedItems.add(String.format("excludeLooksrare: %s->%s", cont.isExcludeLooks(), decryptedConf.getExcludeLooksrare()));
-							cont.setExcludeLooks(decryptedConf.getExcludeLooksrare());
-						}
-						// Active
-						if(nonEquals(cont.isActive(), decryptedConf.getActive())) {
-							updatedItems.add(String.format("active: %s->%s", cont.isActive(), decryptedConf.getActive()));
-							cont.setActive(decryptedConf.getActive());
-						}
-						// Slug
-						if(nonEquals(cont.isSlug(), decryptedConf.getIsSlug())) {
-							updatedItems.add(String.format("isSlug: %s->%s", cont.isSlug(), "true"));
-							cont.setSlug(decryptedConf.getIsSlug());
-						}
-						// If Solana or Polygon set slug
-						if(decryptedConf.getSolanaOnOpensea() || decryptedConf.getPolygonOnOpensea()) {
-							if(!cont.isSlug()) {
+						List<String> updatedItems = new ArrayList<>();
+						Contract cont = this.contracts.getContractById(decryptedConf.getId());
+						// Update existing object in memory
+						if(nonNull(cont)) {
+							// Strings and Integers
+							// Contract Address
+							if(nonEquals(cont.getContractAddress(), decryptedConf.getContractAddress())) {
+								updatedItems.add(String.format("contractAddress: %s->%s", cont.getContractAddress(), decryptedConf.getContractAddress()));
+								cont.setContractAddress(decryptedConf.getContractAddress());
+							}
+							// Interval
+							if(nonEquals(cont.getInterval(), decryptedConf.getInterval())) {
+								updatedItems.add(String.format("interval: %s->%s", cont.getInterval(), decryptedConf.getInterval()));
+								cont.setInterval(decryptedConf.getInterval());
+							}
+							// Rarity
+							if(nonEquals(cont.getRarityEngine(), decryptedConf.getRarityEngine())) {
+								updatedItems.add(String.format("rarityEngine: %s->%s", cont.getRarityEngine(), decryptedConf.getRarityEngine()));
+								cont.setRarityEngine(decryptedConf.getRarityEngine());
+							}
+							
+	
+							// Booleans
+							// Show Bundles
+							if(nonEquals(cont.isShowBundles(), decryptedConf.getShowBundles())) {
+								updatedItems.add(String.format("showBundles: %s->%s", cont.isShowBundles(), decryptedConf.getShowBundles()));
+								cont.setShowBundles(decryptedConf.getShowBundles());
+							}
+							// Exclude OpenSea
+							if(nonEquals(cont.isExcludeOpensea(), decryptedConf.getExcludeOpensea())) {
+								updatedItems.add(String.format("excludeOpensea: %s->%s", cont.isExcludeOpensea(), decryptedConf.getExcludeOpensea()));
+								cont.setExcludeOpensea(decryptedConf.getExcludeOpensea());
+							}
+							// Exclude Looksrare
+							if(nonEquals(cont.isExcludeLooks(), decryptedConf.getExcludeLooksrare())) {
+								updatedItems.add(String.format("excludeLooksrare: %s->%s", cont.isExcludeLooks(), decryptedConf.getExcludeLooksrare()));
+								cont.setExcludeLooks(decryptedConf.getExcludeLooksrare());
+							}
+							// Active
+							if(nonEquals(cont.isActive(), decryptedConf.getActive())) {
+								updatedItems.add(String.format("active: %s->%s", cont.isActive(), decryptedConf.getActive()));
+								cont.setActive(decryptedConf.getActive());
+							}
+							// Slug
+							if(nonEquals(cont.isSlug(), decryptedConf.getIsSlug())) {
 								updatedItems.add(String.format("isSlug: %s->%s", cont.isSlug(), "true"));
-								cont.setSlug(true);
+								cont.setSlug(decryptedConf.getIsSlug());
+							}
+							// If Solana or Polygon set slug
+							if(decryptedConf.getSolanaOnOpensea() || decryptedConf.getPolygonOnOpensea()) {
+								if(!cont.isSlug()) {
+									updatedItems.add(String.format("isSlug: %s->%s", cont.isSlug(), "true"));
+									cont.setSlug(true);
+								}
+							}
+	
+						} 
+						// Add new contract
+						else {
+							LOGGER.debug("Object NOT found in memory, building new");
+							try {
+								// Build required components for each entry
+								Contract watcher = new ContractBuilder().configProperties(decryptedConf, this.configs, this.events);
+								// Start the watcher
+								watcher.startListingsScheduler();
+								// Add this to internal memory buffer
+								this.contracts.addContract(watcher);
+								updatedItems.add(String.format("new: %s", watcher));
+							} catch (Exception e) {
+								LOGGER.error("Failed starting config with id {}, exception {}", conf.getId(), e.getMessage());
 							}
 						}
-
-					} 
-					// Add new contract
-					else {
-						LOGGER.debug("Object NOT found in memory, building new");
-						try {
-							// Build required components for each entry
-							Contract watcher = new ContractBuilder().configProperties(decryptedConf, this.configs, this.events);
-							// Start the watcher
-							watcher.startListingsScheduler();
-							// Add this to internal memory buffer
-							this.contracts.addContract(watcher);
-							updatedItems.add(String.format("new: %s", watcher));
-						} catch (Exception e) {
-							LOGGER.error("Failed starting config with id {}, exception {}", conf.getId(), e.getMessage());
+						if(updatedItems.size() > 0) {
+							if(nonNull(cont)) cont.setConfig(conf);
+							LOGGER.info("Contract {} updated {}", conf.getId(), Arrays.toString(updatedItems.toArray()));
 						}
+					} catch(Exception ex) {
+						LOGGER.error("Failed inital parsing on id {}, exception {}", conf.getId(), ex.getMessage());
 					}
-					if(updatedItems.size() > 0) {
-						if(nonNull(cont)) cont.setConfig(conf);
-						LOGGER.info("Contract {} updated {}", conf.getId(), Arrays.toString(updatedItems.toArray()));
-					}
-				} catch(Exception ex) {
-					LOGGER.error("Failed inital parsing on id {}, exception {}", conf.getId(), ex.getMessage());
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 		
@@ -157,14 +161,18 @@ public class UpdateScheduler extends TimerTask {
 		}
 		/// Ensure all contratcs in memory exist in the DB
 		for(Contract cont : contracts.getContracts()) {
-			boolean existsInDB = this.configs.existsById(cont.getId());
-			if(!existsInDB) {
-				LOGGER.info("Object was not in the db, removing: {}", cont.toString());
-				removeContract(cont);
-				// A limitation of this modification
-				// An active loop cannot be modified then continued to loop
-				// Any extra contracts removed next time
-				break;
+			try {
+				boolean existsInDB = this.configs.existsById(cont.getId());
+				if(!existsInDB) {
+					LOGGER.info("Object was not in the db, removing: {}", cont.toString());
+					removeContract(cont);
+					// A limitation of this modification
+					// An active loop cannot be modified then continued to loop
+					// Any extra contracts removed next time
+					break;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}
