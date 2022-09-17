@@ -146,13 +146,31 @@ public class UpdateScheduler extends TimerTask {
 				}
 			}
 		}
+		
 		// Cleanup
+		/// Remove contracts which are marked not active
 		for(Contract c : this.contracts.getContracts()) {
 			if(!c.isActive()) {
-				LOGGER.debug("Object was found to not be active, removing: {}", c.toString());
-				c.stopListingsScheduler();
-				this.contracts.removeContract(c);
+				LOGGER.info("Object was not active, removing: {}", c.toString());
+				removeContract(c);
 			}
 		}
+		/// Ensure all contratcs in memory exist in the DB
+		for(Contract cont : contracts.getContracts()) {
+			boolean existsInDB = this.configs.existsById(cont.getId());
+			if(!existsInDB) {
+				LOGGER.info("Object was not in the db, removing: {}", cont.toString());
+				removeContract(cont);
+				// A limitation of this modification
+				// An active loop cannot be modified then continued to loop
+				// Any extra contracts removed next time
+				break;
+			}
+		}
+	}
+	
+	private void removeContract(Contract c) {
+		c.stopListingsScheduler();
+		this.contracts.removeContract(c);
 	}
 }
