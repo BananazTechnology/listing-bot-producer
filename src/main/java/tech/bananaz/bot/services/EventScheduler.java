@@ -143,6 +143,7 @@ public class EventScheduler extends TimerTask {
 										repo.save(event);
 								} catch (Exception ex) {
 									LOGGER.error("Error on OpenSea save dispatch of contract id {} with excpetion {} - {}", this.contract.getId(), ex.getCause(), ex.getMessage());
+									throw new Exception("Database save error");
 								}
 								
 							} else break;
@@ -202,6 +203,7 @@ public class EventScheduler extends TimerTask {
 										repo.save(event);
 								} catch (Exception ex) {
 									LOGGER.error("Error on LooksRare save dispatch of contract id {} with excpetion {} - {}", this.contract.getId(), ex.getCause(), ex.getMessage());
+									throw new Exception("Database save error");
 								}
 							} else break;
 						}
