@@ -60,12 +60,4 @@ public class Contract {
 	public boolean getIsSchedulerActive() {
 		return this.newRequest.isActive();
 	}
-	
-	public long getLastOpenseaId() {
-		return this.newRequest.getOpenSeaIdBuffer();
-	}
-	
-	public long getLastLooksrareId() {
-		return this.newRequest.getPreviousLooksId();
-	}
 }
