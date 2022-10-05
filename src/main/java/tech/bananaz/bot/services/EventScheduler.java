@@ -22,10 +22,6 @@ public class EventScheduler extends TimerTask {
 	// Resources and important
 	@Getter
 	private boolean active			= false;
-	@Getter
-	private long previousLooksId 	= 0;
-	@Getter
-	private long openSeaIdBuffer	= 0;
 	private Timer timer 		 	= new Timer(); // creating timer
 	private LooksRareUtils looksApi = new LooksRareUtils();
 	private KeyUtils kUtils         = new KeyUtils();
@@ -105,55 +101,53 @@ public class EventScheduler extends TimerTask {
 				(!this.contract.isSlug()) ? 
 						this.api.getEventsListingsAddress(this.contract.getContractAddress()) :
 						this.api.getEventsListingsSlug(this.contract.getContractAddress());
-		JSONArray assetEvents 	  = (JSONArray) marketListings.get("asset_events");
+		JSONArray assetEvents = (JSONArray) marketListings.get("asset_events");
 		
 		// Process the response from OpenSea API
 		if(!assetEvents.isEmpty()) {
 			ArrayList<Event> events = new ArrayList<>();
 			for(int i = 0; i < assetEvents.size(); i++) {
 				// Grab sub-objects in message
-				JSONObject listing   = (JSONObject) assetEvents.get(i);
-				long id = listing.getAsNumber("id").longValue();
-				if(id > this.openSeaIdBuffer) {
-					// Build event
-					Event e = pUtils.buildOpenSeaEvent(
-										listing, 
-										this.contract.getConfig());
-					// Append to the end of the List
-					events.add(e);
-				} else break;
+				JSONObject listing = (JSONObject) assetEvents.get(i);
+				// Build event
+				Event e = pUtils.buildOpenSeaEvent(
+									listing, 
+									this.contract.getConfig());
+				// Append to the end of the List
+				events.add(e);
 			}
 			// Only process with data in events
 			if(events.size() > 0) {
 				//Sort array
 				Collections.sort(events);
 
-				if(this.openSeaIdBuffer != 0) {
-					// Process sorted array
-					for(int i = 0; i < events.size(); i++) {
-						Event event = events.get(i);
-						if(this.contract.isShowBundles() || event.getQuantity() == 1) {
-							if(event.getId() > this.openSeaIdBuffer && !repo.existsByHash(event.getHash())) {
-								// Log in terminal
-								logInfoNewEvent(event);
+				// To count entries added
+				int count = 0;
 
-								// Write, ensure not exists to not overwrite existing data
-								try {
-									if(!repo.existsById(event.getId()))
-										repo.save(event);
-								} catch (Exception ex) {
-									LOGGER.error("Error on OpenSea save dispatch of contract id {} with excpetion {} - {}", this.contract.getId(), ex.getCause(), ex.getMessage());
-									throw new Exception("Database save error");
+				// Process sorted array
+				for(int i = 0; i < events.size(); i++) {
+					Event event = events.get(i);
+					if(this.contract.isShowBundles() || event.getQuantity() == 1) {
+						if(!repo.existsByHash(event.getHash()) && !repo.existsById(event.getId())) {
+							// Log in terminal
+							logInfoNewEvent(event);
+
+							// Write, ensure not exists to not overwrite existing data
+							try {
+								if(!repo.existsById(event.getId())) {
+									repo.save(event);
+									count++;
 								}
-								
-							} else break;
+							} catch (Exception ex) {
+								LOGGER.error("Error on OpenSea save dispatch of contract id {} with excpetion {} - {}", this.contract.getId(), ex.getCause(), ex.getMessage());
+								throw new Exception("Database save error");
+							}
+							
 						}
 					}
 				}
-				Event f0 = events.get(0);
-				if(f0.getId() > this.openSeaIdBuffer) this.openSeaIdBuffer = f0.getId();
+				if(count == 0) LOGGER.info(String.format("No listings found this OpenSea loop: %s", this.contract.toString()));
 			}
-			if(events.size() == 0) LOGGER.info(String.format("No listings found this OpenSea loop: %s", this.contract.toString()));
 		}
 	}
 	
@@ -169,17 +163,13 @@ public class EventScheduler extends TimerTask {
 			for(int i = 0; i < lrEvents.size(); i++) {
 				// Grab sub-objects in message 
 				JSONObject listing = (JSONObject) lrEvents.get(i);
-				int id = Integer.valueOf(listing.getAsString("id"));
-				if(id > this.previousLooksId) {
-					// Build event
-					Event e = pUtils.buildLooksRareEvent(
-										listing, 
-										this.contract.getConfig());
-					
+				// Build event
+				Event e = pUtils.buildLooksRareEvent(
+									listing, 
+									this.contract.getConfig());
 
-					// Append to the end of the List
-					events.add(e);
-				} else break;
+				// Append to the end of the List
+				events.add(e);
 			}
 			
 			
@@ -188,31 +178,32 @@ public class EventScheduler extends TimerTask {
 				//Sort array
 				Collections.sort(events);
 
-				if(this.previousLooksId != 0) {
-					// Process sorted array
-					for(int i = 0; i < events.size(); i++) {
-						Event event = events.get(i);
-						if(this.contract.isShowBundles() || event.getQuantity() == 1) {
-							if(event.getId() > this.previousLooksId && !repo.existsByHash(event.getHash())) {
-								// Log in terminal
-								logInfoNewEvent(event);
+				// To count entries added
+				int count = 0;
+				
+				// Process sorted array
+				for(int i = 0; i < events.size(); i++) {
+					Event event = events.get(i);
+					if(this.contract.isShowBundles() || event.getQuantity() == 1) {
+						if(!repo.existsByHash(event.getHash()) && !repo.existsById(event.getId())) {
+							// Log in terminal
+							logInfoNewEvent(event);
 
-								// Write, ensure not exists to not overwrite existing data
-								try {
-									if(!repo.existsById(event.getId()))
-										repo.save(event);
-								} catch (Exception ex) {
-									LOGGER.error("Error on LooksRare save dispatch of contract id {} with excpetion {} - {}", this.contract.getId(), ex.getCause(), ex.getMessage());
-									throw new Exception("Database save error");
+							// Write, ensure not exists to not overwrite existing data
+							try {
+								if(!repo.existsById(event.getId())) {
+									repo.save(event);
+									count++;
 								}
-							} else break;
+							} catch (Exception ex) {
+								LOGGER.error("Error on LooksRare save dispatch of contract id {} with excpetion {} - {}", this.contract.getId(), ex.getCause(), ex.getMessage());
+								throw new Exception("Database save error");
+							}
 						}
 					}
 				}
-				Event f0 = events.get(0);
-				if(f0.getId() > this.previousLooksId) this.previousLooksId = f0.getId();
+				if(count == 0) LOGGER.info(String.format("No listings found this LooksRare loop: %s", this.contract.toString()));
 			}
-			if(events.size() == 0) LOGGER.info(String.format("No listings found this LooksRare loop: %s", this.contract.toString()));
 		}
 	}
 	
