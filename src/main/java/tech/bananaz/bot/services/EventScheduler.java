@@ -27,6 +27,8 @@ public class EventScheduler extends TimerTask {
 	private KeyUtils kUtils         = new KeyUtils();
 	private ParsingUtils pUtils     = new ParsingUtils();
 	private String openSeaKey   	= "0";
+	private Long openseaIdBuffer    = Long.valueOf(0);
+	private Long looksrareIdBuffer  = Long.valueOf(0);
     private TimerTask task; // creating timer task
 	private static final Logger LOGGER = LoggerFactory.getLogger(EventScheduler.class);
 
@@ -121,6 +123,10 @@ public class EventScheduler extends TimerTask {
 				//Sort array
 				Collections.sort(events);
 
+				if(this.openseaIdBuffer == 0) {
+					this.openseaIdBuffer = events.get(0).getId();
+				}
+
 				// To count entries added
 				int count = 0;
 
@@ -128,7 +134,7 @@ public class EventScheduler extends TimerTask {
 				for(int i = 0; i < events.size(); i++) {
 					Event event = events.get(i);
 					if(this.contract.isShowBundles() || event.getQuantity() == 1) {
-						if(!repo.existsByHash(event.getHash()) && !repo.existsById(event.getId())) {
+						if(!repo.existsByHash(event.getHash()) && !repo.existsById(event.getId()) && event.getId() > this.openseaIdBuffer) {
 							// Log in terminal
 							logInfoNewEvent(event);
 
@@ -178,6 +184,10 @@ public class EventScheduler extends TimerTask {
 				//Sort array
 				Collections.sort(events);
 
+				if(this.looksrareIdBuffer == 0) {
+					this.looksrareIdBuffer = events.get(0).getId();
+				}
+
 				// To count entries added
 				int count = 0;
 				
@@ -185,7 +195,7 @@ public class EventScheduler extends TimerTask {
 				for(int i = 0; i < events.size(); i++) {
 					Event event = events.get(i);
 					if(this.contract.isShowBundles() || event.getQuantity() == 1) {
-						if(!repo.existsByHash(event.getHash()) && !repo.existsById(event.getId())) {
+						if(!repo.existsByHash(event.getHash()) && !repo.existsById(event.getId()) && event.getId() > this.looksrareIdBuffer) {
 							// Log in terminal
 							logInfoNewEvent(event);
 
