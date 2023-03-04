@@ -22,11 +22,12 @@ jobs:
     steps:
       # Code Checkout
       - name: Code Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       # Runs as Java
       - name: Set up JDK ${{ matrix.java }}
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: temurin
           java-version: ${{ matrix.java }}
       - name: Builds Maven Settings
         uses: whelk-io/maven-settings-xml-action@v20
@@ -42,46 +43,64 @@ jobs:
                 "id": "github",
                 "url": "https://maven.pkg.github.com/BananazTechnology/bot-core"
             }]
-      # Runs a set of commands using the runners shell
-      - name: Maven Verify
-        run: mvn -V --fail-fast --no-transfer-progress --batch-mode clean package -DskipTests
+      # Run commands using shell runner
+      - name: Maven verify build
+        run: |
+          mvn -V --fail-fast --no-transfer-progress --batch-mode clean package -DskipTests
+      #
+      # The next 2 steps gather project ifo from the Java application
       # Get POM version
-      - name: Extract Maven Project Version
-        run: echo ::set-output name=version::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+      - name: Extract Maven project version
+        run: echo "version=$(bash mvnw -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)" >> $GITHUB_OUTPUT
         id: project
       # Get project name
-      - name: Extract Maven Artifact ID
-        run: echo ::set-output name=artifactId::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.artifactId}' --non-recursive exec:exec)
+      - name: Extract Maven project name
+        run: echo "artifactId=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.artifactId}' --non-recursive exec:exec)" >> $GITHUB_OUTPUT
         id: artifact
       # Get Bananaz Core version
       - name: Extract Maven Bananaz Core Version
-        run: echo ::set-output name=version::$(mvn -q -Dexec.executable=echo -Dexec.args='${bananaz.version}' --non-recursive exec:exec)
+        run: echo "version=$(mvn -q -Dexec.executable=echo -Dexec.args='${bananaz.version}' --non-recursive exec:exec)" >> $GITHUB_OUTPUT
         id: btCore
       #
-      # Run Docker stuff
-      #
-      # Do stuff to build docker image          
+      # Docker build
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
+      #
+      # Setup DockerHub
       - name: Login to DockerHub
-        uses: docker/login-action@v1 
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build Dockerfile and Push
-        id: docker_build
-        uses: docker/build-push-action@v2
+      #
+      # Setup Github Secure Registry
+      - name: Login to GitHub
+        uses: docker/login-action@v2 
         with:
-          context: .
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.artifact.outputs.artifactId }}:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.artifact.outputs.artifactId }}:${{ steps.project.outputs.version }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      # Docker image metadata
+      - name: Build Docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
           labels: |
             tech.bananaz.app.version=${{ steps.project.outputs.version }}
             tech.bananaz.core.version=${{ steps.btCore.outputs.version }}
             tech.bananaz.maintainer=contact@bananaz.tech
-
-
+          tags: |
+            type=semver,pattern={{version}},value=${{ steps.project.outputs.version }}
+          images: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.artifact.outputs.artifactId }}
+            ghcr.io/${{ github.repository }}
+      - name: Build Dockerfile and Push
+        id: docker_build
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
